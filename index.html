@@ -95,7 +95,17 @@
     .prio-table { border-collapse:collapse; background:#fff; border-radius:10px; overflow:hidden; font-size:11px; margin:0 auto; width:100%; max-width:560px; table-layout:fixed; }
     .prio-table th, .prio-table td { padding:5px 4px; text-align:center; border:1px solid #e4dccd; }
     .prio-table th { background:linear-gradient(135deg,var(--navy),var(--navy-light)); color:#fff; font-weight:700; font-size:10.5px; min-width:46px; line-height:1.25; }
-    .prio-table td:first-child, .prio-table th:first-child { text-align:left; padding-left:8px; font-weight:700; background:#fbf7f0; width:27%; color:var(--navy); font-size:12px; }
+    .prio-table th.cap-row { background:#efe6d8; color:var(--navy); font-size:11px; padding:5px 6px; }
+    .ord-num { display:inline-flex; align-items:center; justify-content:center; width:17px; height:17px; border-radius:50%; background:var(--navy); color:#fff; font-size:10px; font-weight:800; margin-right:5px; }
+    .ord-pick { display:inline-flex; align-items:center; gap:2px; padding:3px 6px; font-size:12px; font-weight:700; background:#fff; color:var(--navy); border:1.5px dashed var(--navy-light); border-radius:8px; box-shadow:none; }
+    .ord-pick:hover { filter:none; background:#f6efe4; }
+    .ord-choose { display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-top:5px; font-size:11px; font-weight:600; color:var(--muted); }
+    .ord-opt { padding:0; width:24px; height:24px; font-size:12px; font-weight:800; border-radius:50%; background:#efe6d8; color:var(--navy); border:1px solid #d9c9b0; box-shadow:none; }
+    .ord-opt.cur { background:var(--navy); color:#fff; border-color:var(--navy); }
+    .ord-opt:hover { filter:none; background:var(--primary); color:#fff; border-color:var(--primary); }
+    tr.ord-moved td { animation:ordflash 1s ease; }
+    @keyframes ordflash { 0%{ background:#fff3cd; } 100%{ background:transparent; } }
+    .prio-table td:first-child, .prio-table th:first-child { text-align:left; padding-left:8px; font-weight:700; background:#fbf7f0; width:32%; color:var(--navy); font-size:12px; }
     .prio-cell-btn { width:30px; height:30px; border-radius:50%; border:2px solid #d9c9b0; background:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#bbb; cursor:pointer; transition:all 0.15s; padding:0; }
     .prio-cell-btn.active { background:var(--primary); border-color:var(--primary-dark); color:#fff; }
     .prio-table-wrap.locked .prio-cell-btn { cursor:not-allowed; }
@@ -241,6 +251,9 @@
             <div id="tablesColumn"></div>
           </div>
         </div>
+        <div class="footer-tools">
+          <button id="btnClearHistory" class="del-btn" type="button">🗑️ Xóa lịch sử</button>
+        </div>
       </div>
 
       <div id="spinScreen" class="spin-screen" style="display:none;">
@@ -313,13 +326,15 @@
         <div class="prio-table-wrap" id="prioTableWrap">
           <table class="prio-table">
             <thead>
-              <tr><th>Ưu tiên ghép</th><th>Hạng<br>1</th><th>Hạng<br>2</th><th>Hạng<br>3</th><th>Hạng<br>4</th></tr>
+              <tr><th class="cap-row" rowspan="2">Sắp xếp thứ tự quay</th><th colspan="4" class="cap-row">Thứ tự ưu tiên ghép hạng</th></tr>
+              <tr><th>Hạng<br>1</th><th>Hạng<br>2</th><th>Hạng<br>3</th><th>Hạng<br>4</th></tr>
             </thead>
             <tbody id="prioTableBody"></tbody>
           </table>
         </div>
         <div class="prio-legend" id="prioLegend"></div>
         <p style="margin-top:12px; font-size:13px; color:var(--muted);">• Khi chia bảng: tối thiểu 3 cặp/bảng, các cặp được chia ngẫu nhiên và đều nhau nhất có thể giữa các bảng.</p>
+        <p style="margin-top:6px; font-size:13px; color:var(--muted);">• Thứ tự quay ngẫu nhiên: app quay lần lượt theo thứ tự các hạng ở cột bên trái (bấm ✏️ Sửa luật, bấm vào tên hạng rồi chọn thứ tự quay, hạng đó sẽ tự nhảy về đúng vị trí). Trong mỗi hạng, người chơi được quay ngẫu nhiên từng người cho đến khi hết người của hạng đó thì mới sang hạng kế tiếp; người đã có cặp thì được bỏ qua. Cứ thế đến khi hết người chơi trong danh sách.</p>
         <div class="share-bar" style="margin-top:14px;">
           <button id="btnShare" class="warn" type="button">🔗 Sao chép link chia sẻ</button>
           <span class="share-msg" id="shareMsg">Link kèm danh sách người chơi, luật ưu tiên và kết quả chia cặp/bảng hiện tại.</span>
@@ -327,9 +342,6 @@
       </div>
     </div>
 
-    <div class="footer-tools">
-      <button id="btnClearHistory" class="del-btn" type="button">🗑️ Xóa lịch sử</button>
-    </div>
   </div>
 
 
@@ -361,6 +373,10 @@
   let priorityRules = defaultPriorityRules();
   let editMode = false;
   let draftPriorityRules = null;
+  let spinOrder = [1,2,3,4];      // thứ tự các hạng được quay ngẫu nhiên
+  let draftSpinOrder = null;
+  let openPick = null, lastMoved = null;   // hạng đang mở ô chọn thứ tự / hạng vừa được chuyển
+  const validOrder = a => Array.isArray(a) && a.length === 4 && [1,2,3,4].every(x => a.includes(x));
   let hasUnsavedChanges = false;
   let pendingTabTarget = null;
 
@@ -409,7 +425,7 @@
   function saveState(){
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        hang1, hang2, hang3, hang4, priorityRules
+        hang1, hang2, hang3, hang4, priorityRules, spinOrder
       }));
     }catch(e){ /* trình duyệt chặn lưu trữ: bỏ qua */ }
   }
@@ -423,6 +439,7 @@
     if(r && okRule(r[1]) && okRule(r[2]) && okRule(r[3]) && okRule(r[4])){
       priorityRules = clonePriorityRules(r);
     }
+    if(validOrder(d.spinOrder)) spinOrder = [...d.spinOrder];
   }
   function loadState(){
     try{
@@ -451,8 +468,8 @@
 
   function buildShareLink(){
     const base = location.href.split('#')[0];
-    const cur = { hang1, hang2, hang3, hang4, priorityRules };
-    const def = DEFAULT_SETTINGS || { hang1:[], hang2:[], hang3:[], hang4:[], priorityRules: defaultPriorityRules() };
+    const cur = { hang1, hang2, hang3, hang4, priorityRules, spinOrder };
+    const def = Object.assign({ spinOrder:[1,2,3,4] }, DEFAULT_SETTINGS || { hang1:[], hang2:[], hang3:[], hang4:[], priorityRules: defaultPriorityRules() });
     const hasResult = capDau.length > 0 || capBang.length > 0;
     if(DEFAULT_SETTINGS && !hasResult && JSON.stringify(cur) === JSON.stringify(def)) return base;
 
@@ -467,6 +484,7 @@
     if(JSON.stringify(priorityRules) !== JSON.stringify(defaultPriorityRules())){
       d.r = [priorityRules[1], priorityRules[2], priorityRules[3], priorityRules[4]];
     }
+    if(spinOrder.join() !== '1,2,3,4') d.o = spinOrder;
     return base + '#s=' + toB64Url(JSON.stringify(d));
   }
   // Trả về true nếu đọc được thiết lập từ link
@@ -483,7 +501,7 @@
         applyData({
           hang1: n.slice(0, c1), hang2: n.slice(c1, c1+c2),
           hang3: n.slice(c1+c2, c1+c2+c3), hang4: n.slice(c1+c2+c3, c1+c2+c3+c4),
-          priorityRules: rules
+          priorityRules: rules, spinOrder: d.o || [1,2,3,4]
         });
         const dec = pair => [n[pair[0]], n[pair[1]]];
         const okPair = pair => Array.isArray(pair) && n[pair[0]] !== undefined && n[pair[1]] !== undefined;
@@ -567,6 +585,7 @@
 
   btnModalSaveLeave.addEventListener('click', ()=>{
     priorityRules = clonePriorityRules(draftPriorityRules);
+    spinOrder = [...draftSpinOrder];
     saveState();
     exitEditMode();
     leaveConfirmOverlay.style.display = 'none';
@@ -694,12 +713,13 @@
   function enterEditMode(){
     editMode = true;
     draftPriorityRules = clonePriorityRules(priorityRules);
+    draftSpinOrder = [...spinOrder]; openPick = null;
     hasUnsavedChanges = false;
     updatePriorityUI();
   }
   function exitEditMode(){
     editMode = false;
-    draftPriorityRules = null;
+    draftPriorityRules = null; draftSpinOrder = null; openPick = null;
     hasUnsavedChanges = false;
     updatePriorityUI();
   }
@@ -707,6 +727,7 @@
   btnEditPriority.addEventListener('click', enterEditMode);
   btnSavePriority.addEventListener('click', ()=>{
     priorityRules = clonePriorityRules(draftPriorityRules);
+    spinOrder = [...draftSpinOrder];
     saveState();
     exitEditMode();
   });
@@ -715,13 +736,35 @@
   });
   btnResetPriority.addEventListener('click', ()=>{
     if(!editMode) return;
-    draftPriorityRules = defaultPriorityRules();
+    draftPriorityRules = defaultPriorityRules(); draftSpinOrder = [1,2,3,4]; openPick = null;
     hasUnsavedChanges = true;
     renderPriorityTable();
   });
 
   prioTableBody.addEventListener('click', (e)=>{
     if(!editMode) return;
+    const pick = e.target.closest('.ord-pick');
+    if(pick){
+      const row = parseInt(pick.dataset.row);
+      openPick = (openPick === row) ? null : row;
+      renderPriorityTable();
+      return;
+    }
+    const opt = e.target.closest('.ord-opt');
+    if(opt){
+      const row = parseInt(opt.dataset.row), to = parseInt(opt.dataset.to) - 1;
+      const from = draftSpinOrder.indexOf(row);
+      if(from !== to){
+        draftSpinOrder.splice(from, 1);
+        draftSpinOrder.splice(to, 0, row);      // hạng nhảy vào vị trí đã chọn, các hạng khác dồn theo
+        hasUnsavedChanges = true;
+        lastMoved = row;
+        setTimeout(()=>{ lastMoved = null; }, 1200);
+      }
+      openPick = null;
+      renderPriorityTable();
+      return;
+    }
     const btn = e.target.closest('.prio-cell-btn');
     if(!btn) return;
     const row = parseInt(btn.dataset.row);
@@ -750,9 +793,16 @@
 
   function renderPriorityTable(){
     const rules = editMode ? draftPriorityRules : priorityRules;
+    const order = editMode ? draftSpinOrder : spinOrder;
     let html = '';
-    for(let row=1; row<=4; row++){
-      html += `<tr><td>Hạng ${row}</td>`;
+    for(let pos=0; pos<4; pos++){
+      const row = order[pos];
+      const label = editMode
+        ? `<button type="button" class="ord-pick" data-row="${row}"><span class="ord-num">${pos+1}</span>Hạng ${row} ▾</button>`
+        : `<span class="ord-num">${pos+1}</span>Hạng ${row}`;
+      const chooser = (editMode && openPick === row)
+        ? `<div class="ord-choose">Quay thứ:${[1,2,3,4].map(n=>`<button type="button" class="ord-opt ${n===pos+1?'cur':''}" data-row="${row}" data-to="${n}">${n}</button>`).join('')}</div>` : '';
+      html += `<tr class="${row===lastMoved?'ord-moved':''}"><td>${label}${chooser}</td>`;
       for(let col=1; col<=4; col++){
         const idx = rules[row].indexOf(col);
         const active = idx !== -1;
@@ -764,7 +814,7 @@
     prioTableBody.innerHTML = html;
 
     let legendHtml = '';
-    for(let row=1; row<=4; row++){
+    for(const row of order){
       const seq = rules[row].map(x=>'Hạng '+x).join(' → ');
       legendHtml += `<div class="prio-legend-item"><strong>Hạng ${row}</strong> ưu tiên ghép: ${seq || '(chưa chọn hạng nào)'}</div>`;
     }
@@ -782,8 +832,8 @@
     };
 
     let queue = [];
-    // Xét lần lượt Hạng 1 → 2 → 3 → 4 (trong mỗi hạng thứ tự đã được xáo ngẫu nhiên)
-    [1,2,3,4].forEach(rank => pools[rank].forEach(name => queue.push({name, rank})));
+    // Xét lần lượt theo thứ tự hạng đã cài ở Tab 3 (trong mỗi hạng thứ tự đã được xáo ngẫu nhiên)
+    spinOrder.forEach(rank => pools[rank].forEach(name => queue.push({name, rank})));
 
     function removeFromPool(rank, name){
       const arr = pools[rank];
