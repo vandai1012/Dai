@@ -133,6 +133,8 @@
     .pair-num { background:var(--primary); color:#fff; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0; }
     .pair-card.tabled .pair-num { background:#808000; }
     .pair-names { flex:1; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px; font-weight:700; font-size:12px; color:#1f2937; }
+    .rank-tag { font-size:10.5px; font-weight:800; padding:1px 6px; border-radius:999px; color:#fff; white-space:nowrap; }
+    .rank-tag.r1 { background:#008080; } .rank-tag.r2 { background:#808000; } .rank-tag.r3 { background:#8b5a2b; } .rank-tag.r4 { background:#5f7370; }
     .pair-name { word-break:break-word; background:#fff; padding:2px 7px; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
     .vs-icon { font-size:12px; }
     .badge-table { font-size:10.5px; background:#808000; color:#fff; padding:2px 7px; border-radius:10px; white-space:nowrap; margin-left:4px; }
@@ -1017,6 +1019,14 @@
     return s;
   }
 
+  function rankOf(name){
+    return hang1.includes(name) ? 1 : hang2.includes(name) ? 2 : hang3.includes(name) ? 3 : hang4.includes(name) ? 4 : 0;
+  }
+  function rankTag(name){
+    const r = rankOf(name);
+    return r ? `<span class="rank-tag r${r}">H${r}</span>` : '';
+  }
+
   function renderPairs(pairs){
     if(!pairs || pairs.length===0){ pairsColumn.innerHTML = '<h3>Danh sách cặp đấu</h3><p class="empty-hint">Chưa có cặp nào.</p>'; return; }
     const tabled = getTabledPairKeys();
@@ -1027,9 +1037,9 @@
         <div class="pair-card ${isTabled ? 'tabled' : ''}">
           <div class="pair-num">${i+1}</div>
           <div class="pair-names">
-            <span class="pair-name">${escapeHtml(p[0])}</span>
+            ${rankTag(p[0])}<span class="pair-name">${escapeHtml(p[0])}</span>
             <span class="vs-icon">🤝</span>
-            <span class="pair-name">${escapeHtml(p[1])}</span>
+            <span class="pair-name">${escapeHtml(p[1])}</span>${rankTag(p[1])}
           </div>
           ${isTabled ? '<span class="badge-table">📋 Đã chia bảng</span>' : ''}
         </div>`;
