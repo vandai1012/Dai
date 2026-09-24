@@ -133,6 +133,7 @@
     .pair-num { background:var(--primary); color:#fff; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0; }
     .pair-card.tabled .pair-num { background:#808000; }
     .pair-names { flex:1; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px; font-weight:700; font-size:12px; color:#1f2937; }
+    .dup-tag { font-size:10px; font-weight:800; color:#fff; background:#d64545; border-radius:999px; padding:1px 6px; margin-left:6px; white-space:nowrap; }
     .rank-tag { font-size:10.5px; font-weight:800; padding:1px 6px; border-radius:999px; color:#fff; white-space:nowrap; }
     .rank-tag.r1 { background:#008080; } .rank-tag.r2 { background:#808000; } .rank-tag.r3 { background:#8b5a2b; } .rank-tag.r4 { background:#5f7370; }
     .pair-name { word-break:break-word; background:#fff; padding:2px 7px; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
@@ -579,14 +580,12 @@
     const ten = elTen.value.trim();
     const hang = parseInt(elHang.value);
     if(!ten){ showAddWarning('Vui lòng nhập tên người chơi.'); elTen.focus(); return; }
-    if (hang1.includes(ten) || hang2.includes(ten) || hang3.includes(ten) || hang4.includes(ten)) {
-      showAddWarning('Tên này đã tồn tại trong danh sách.');
-      elTen.value = ''; elTen.focus(); return;
-    }
+    const isDup = dupCounts().has(nameKey(ten));
     getArr(hang).push(ten);
     elTen.value = '';
     capDau = []; capBang = []; messageEl.style.display='none';
     renderAll();
+    if(isDup) showAddWarning('Đã thêm. Tên này bị trùng, mục "trùng tên" sẽ hiện bên cạnh trong danh sách.');
   }
 
   [[list1,1],[list2,2],[list3,3],[list4,4]].forEach(([container, rank])=>{
@@ -594,9 +593,8 @@
       const li = e.target.closest('li');
       if(!li) return;
       const idx = parseInt(li.dataset.index);
-      const name = getArr(rank)[idx];
-      if(selected[rank].has(name)) selected[rank].delete(name);
-      else selected[rank].add(name);
+      if(selected[rank].has(idx)) selected[rank].delete(idx);
+      else selected[rank].add(idx);
       renderAll();
     });
   });
@@ -628,7 +626,7 @@
       }
       [1,2,3,4].forEach(r=>{
         const names = selected[r];
-        setArr(r, getArr(r).filter(n => !names.has(n)));
+        setArr(r, getArr(r).filter((n,i) => !names.has(i)));
         names.clear();
       });
       afterDelete();
@@ -764,7 +762,8 @@
 
       const order = priorityRules[person.rank] || [];
       for(const targetRank of order){
-        const candidates = pools[targetRank].filter(n => !(targetRank === person.rank && n === person.name));
+        const candidates = [...pools[targetRank]];
+        if(targetRank === person.rank){ const self = candidates.indexOf(person.name); if(self > -1) candidates.splice(self, 1); }
         if(candidates.length > 0){
           const chosen = candidates[Math.floor(Math.random()*candidates.length)];
           removeFromPool(person.rank, person.name);
@@ -1047,6 +1046,16 @@
     pairsColumn.innerHTML = html;
   }
 
+  const nameKey = n => String(n).trim().toLowerCase();
+  function dupCounts(){
+    const m = new Map();
+    [...hang1, ...hang2, ...hang3, ...hang4].forEach(n=>{ const k = nameKey(n); m.set(k, (m.get(k)||0) + 1); });
+    return m;
+  }
+  function soNguoiTrungTen(){
+    let total = 0; dupCounts().forEach(c=>{ if(c > 1) total += c; });
+    return total;
+  }
   function capNhatThongKe(){
     const tongNguoi = hang1.length + hang2.length + hang3.length + hang4.length;
     const daChiaNguoi = Math.min(capDau.length * 2, tongNguoi);
@@ -1065,16 +1074,19 @@
     document.getElementById('statsUnassigned').innerHTML =
       `<strong>Chưa hoàn tất</strong><br>
        Số người chưa được chia cặp: ${chuaChiaNguoi}<br>
-       Số cặp chưa được chia bảng: ${chuaChiaBang}`;
+       Số cặp chưa được chia bảng: ${chuaChiaBang}<br>
+       Số người bị trùng tên: ${soNguoiTrungTen()}`;
   }
 
   function renderRankList(container, arr, rank){
     const paired = getPairedNames();
+    const counts = dupCounts();
     if(arr.length===0){ container.innerHTML = '<li class="empty-hint" style="cursor:default;background:none;">(chưa có ai)</li>'; return; }
     container.innerHTML = arr.map((n,i)=>{
       const isPaired = paired.has(n);
-      const isSelected = selected[rank].has(n);
-      return `<li class="${isPaired?'item-paired':''} ${isSelected?'selected':''}" data-index="${i}"><span class="num">${i+1}.</span><span>${escapeHtml(n)}${isPaired?' ✅':''}</span></li>`;
+      const isSelected = selected[rank].has(i);
+      const isDup = (counts.get(nameKey(n)) || 0) > 1;
+      return `<li class="${isPaired?'item-paired':''} ${isSelected?'selected':''}" data-index="${i}"><span class="num">${i+1}.</span><span>${escapeHtml(n)}${isPaired?' ✅':''}${isDup?'<span class="dup-tag">trùng tên</span>':''}</span></li>`;
     }).join('');
   }
 
