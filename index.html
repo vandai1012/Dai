@@ -748,8 +748,8 @@
     };
 
     let queue = [];
-    [1,2,3,4].forEach(rank => pools[rank].forEach(name => queue.push({name, rank})));
-    queue = shuffle(queue);
+    // Xét lần lượt Hạng 4 → 3 → 2 → 1 (trong mỗi hạng thứ tự đã được xáo ngẫu nhiên)
+    [4,3,2,1].forEach(rank => pools[rank].forEach(name => queue.push({name, rank})));
 
     function removeFromPool(rank, name){
       const arr = pools[rank];
