@@ -75,6 +75,34 @@
     .name-list li .num { font-weight:800; color:var(--primary); min-width:16px; font-size:11px; }
     .name-list li.item-paired { background:#d4f7e8; }
     .name-list li.selected { background:#eef0c8; box-shadow: inset 0 0 0 2px var(--amber); }
+    .force-box { background:#f0f7f6; border:1px solid #d5e6e3; border-radius:12px; padding:10px; margin:12px 0; }
+    .force-box h4 { margin:0 0 8px; color:var(--primary-dark); font-size:13.5px; }
+    .force-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:8px; }
+    .force-row select { flex:1; min-width:120px; padding:6px 8px; font-size:12.5px; border:1px solid var(--border); border-radius:7px; }
+    .force-row button { padding:6px 12px; font-size:12.5px; }
+    .force-list { display:flex; flex-direction:column; gap:5px; }
+    .force-item { display:flex; align-items:center; justify-content:space-between; gap:8px; background:#fff; border:1px solid #d5e6e3; border-radius:8px; padding:5px 9px; font-size:12.5px; font-weight:600; }
+    .force-item button { padding:2px 8px; font-size:11px; background:#fdf1ef; color:#b4443a; border:1px solid #f1cfca; box-shadow:none; }
+    .ko-round-select { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:10px 0; font-size:13px; }
+    .ko-round-select select { padding:6px 10px; font-size:13px; border:1px solid var(--border); border-radius:8px; }
+    .section-sep { border:none; border-top:2px dashed var(--border); margin:22px 0 14px; }
+    .section-title { margin:0 0 10px; color:var(--navy); font-size:16px; }
+    .subtab-bar { display:flex; gap:3px; padding:4px; background:#e9f2f1; border:1px dashed #9fcac5; border-radius:999px; margin-bottom:14px; }
+    .subtab-btn { flex:1; padding:8px 6px; border-radius:999px; background:transparent; color:var(--primary-dark); font-weight:600; font-size:12.5px; box-shadow:none; }
+    .subtab-btn.active { background:var(--primary); color:#fff; box-shadow:0 2px 6px rgba(0,128,128,0.35); font-weight:800; }
+    .subtab-content { display:none; }
+    .subtab-content.active { display:block; }
+    .ko-groups { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; margin:10px 0; }
+    .ko-group { background:#fbf7f0; border:1px solid var(--border); border-radius:12px; padding:10px; }
+    .ko-group h4 { margin:0 0 8px; color:var(--navy); font-size:14px; }
+    .ko-group label { display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:var(--muted); margin:5px 0; }
+    .ko-group label span { width:44px; flex-shrink:0; }
+    .ko-group input { flex:1; padding:6px 8px; font-size:13px; border:1px solid var(--border); border-radius:7px; }
+    .ko-saved-list { margin-top:12px; }
+    .ko-saved-group { background:#f0f7f6; border:1px solid #d5e6e3; border-radius:10px; padding:8px 10px; margin-bottom:8px; }
+    .ko-saved-group h5 { margin:0 0 4px; color:var(--primary-dark); font-size:13px; }
+    .ko-row { font-size:12.5px; padding:2px 0; word-break:break-word; }
+    .ko-row b { color:var(--navy); margin-right:4px; }
     .list-tools { display:flex; gap:8px; flex-wrap:wrap; margin:0 0 10px 0; }
     .del-btn { padding:6px 12px; font-size:12px; font-weight:600; background:#fdf1ef; color:#b4443a; border:1px solid #f1cfca; border-radius:999px; transition:background 0.2s, color 0.2s, border-color 0.2s; }
     .del-btn:hover { background:#fbe3df; filter:none; }
@@ -181,6 +209,67 @@
     #btnStartSpin, #btnBackSpin, #btnCancelSpin, #btnSkipSpin { padding:12px 26px; font-size:15px; }
     .spin-btn-row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
 
+
+    /* ==== Nhánh đấu Knockout (dạng cây, 2 nửa trái/phải gặp nhau ở chung kết) ==== */
+    #koBracket { --bk-gap:14px; --bk-line:#6f93a3; margin-top:16px; padding:16px 12px 8px; border-radius:16px; background:radial-gradient(ellipse at 50% 45%, #27465a 0%, #172c3a 55%, #101e29 100%); border:1px solid #2f4b5d; box-shadow:inset 0 0 40px rgba(0,0,0,0.35), 0 4px 14px rgba(16,30,41,0.25); }
+    #koBracket:empty { display:none; }
+    #koBracket .section-title { color:#fff; text-align:center; font-size:17px; letter-spacing:0.4px; margin:0 0 4px !important; }
+    #koBracket .hint { color:#a9bcc6; text-align:center; margin:0 0 6px; }
+    .bk-scroll { overflow-x:auto; padding:20px 2px 14px; -webkit-overflow-scrolling:touch; }
+    .bk-wrap { display:flex; align-items:center; justify-content:center; width:max-content; min-width:100%; margin:0 auto; }
+    .bk-half { display:flex; align-items:center; }
+    .bk-half.left::after, .bk-half.right::before { content:''; width:var(--bk-gap); height:2px; background:var(--bk-line); flex-shrink:0; }
+    .bk-node { display:flex; align-items:center; }
+    .bk-kids { display:flex; flex-direction:column; justify-content:center; }
+    .bk-kid { position:relative; padding:12px var(--bk-gap) 12px 0; }
+    .bk-kid::after { content:''; position:absolute; right:0; top:50%; width:var(--bk-gap); height:2px; background:var(--bk-line); }
+    .bk-kid::before { content:''; position:absolute; right:0; width:2px; background:var(--bk-line); }
+    .bk-kid:first-child::before { top:50%; bottom:0; }
+    .bk-kid:last-child::before { top:0; bottom:50%; }
+    .bk-kid.none::after, .bk-kid.none::before { display:none; }
+    .bk-card { position:relative; width:176px; background:#eaf7ea; border:1.5px solid #7cc68a; border-radius:9px; flex-shrink:0; box-shadow:0 3px 8px rgba(0,0,0,0.35); }
+    .bk-card .bk-label { background:linear-gradient(135deg,#2e9e5b,#5cc07a); }
+    .bk-card.tier-bronze { background:#f8e9dc; border-color:#cd7f32; }
+    .bk-card.tier-bronze .bk-label { background:linear-gradient(135deg,#8c4f22,#cd7f32); color:#fff; }
+    .bk-card.tier-silver { background:#eef1f5; border-color:#aeb8c4; }
+    .bk-card.tier-silver .bk-label { background:linear-gradient(135deg,#aab4c0,#e4e9ef); color:#2b3440; }
+    .bk-card.tier-gold { background:#fff6d6; border-color:#f0c040; box-shadow:0 0 0 2px rgba(240,192,64,0.35), 0 0 22px rgba(240,192,64,0.55); }
+    .bk-card.tier-gold .bk-label { background:linear-gradient(135deg,#b8860b,#f6d365); color:#4a3200; font-size:11.5px; }
+    .bk-card.has-kids { margin-left:var(--bk-gap); }
+    .bk-card.has-kids::before { content:''; position:absolute; left:calc(-1 * var(--bk-gap)); top:50%; width:var(--bk-gap); height:2px; background:var(--bk-line); }
+    .bk-card.ghost { visibility:hidden; height:62px; }
+    .bk-label { font-size:10.5px; font-weight:800; letter-spacing:0.2px; text-align:center; color:#fff; background:var(--navy); padding:1px 4px; border-radius:7px 7px 0 0; }
+    .bk-row { display:flex; align-items:center; gap:5px; padding:4px 8px; font-size:12px; font-weight:600; min-height:24px; }
+    .bk-row.s-a { justify-content:flex-start; text-align:left; }
+    .bk-row.s-b { flex-direction:row-reverse; justify-content:flex-start; text-align:right; }
+    .bk-row .bk-name { flex:0 1 auto; min-width:0; word-break:break-word; line-height:1.2; }
+    .bk-row .rank-tag { font-size:9.5px; padding:0 5px; flex-shrink:0; }
+    .bk-row.pending, .bk-row.bye { color:#8a9a98; font-style:italic; font-weight:500; font-size:11px; line-height:1.2; }
+    .bk-vs { text-align:center; font-size:12px; line-height:12px; height:12px; }
+    .bk-dt { position:absolute; right:0; bottom:calc(100% + 1px); width:176px; height:13px; }
+    .bk-dt-ph { position:absolute; inset:0; text-align:right; font-size:10.5px; line-height:13px; font-style:italic; color:#8fa6b2; pointer-events:none; }
+    .bk-dt.has .bk-dt-ph, .bk-dt:focus-within .bk-dt-ph { display:none; }
+    .bk-date { position:absolute; inset:0; width:100%; height:100%; box-sizing:border-box; border:none; outline:none; background:transparent; text-align:right; font-size:10.5px; line-height:13px; padding:0; color:#b6c8d1; font-family:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+    .bk-dt:not(.has):not(:focus-within) .bk-date { opacity:0; }
+    .bk-date::-webkit-calendar-picker-indicator { display:none; }
+    .bk-date:focus { color:#fff; }
+    .bk-row.pick { cursor:pointer; }
+    .bk-row.pick:hover .bk-name { text-decoration:underline; }
+    .bk-row.win { color:#0b6b3a; font-weight:800; }
+    .bk-row.win::after { content:'✔'; font-size:11px; }
+    .bk-row.lose { opacity:0.45; text-decoration:line-through; }
+
+    .bk-center { display:flex; flex-direction:column; align-items:center; gap:6px; padding:0 2px; }
+    .bk-trophy { font-size:52px; line-height:1; filter:drop-shadow(0 0 14px rgba(246,211,101,0.75)) drop-shadow(0 3px 4px rgba(0,0,0,0.4)); }
+    .bk-champ { font-size:13px; font-weight:800; color:#4a3200; background:linear-gradient(135deg,#f6d365,#fda085 160%); border:1px solid #ffe08a; box-shadow:0 0 14px rgba(246,211,101,0.5); border-radius:999px; padding:3px 12px; text-align:center; max-width:170px; word-break:break-word; }
+    .bk-champ.empty { background:rgba(255,255,255,0.08); border:1px dashed #6f93a3; color:#a9bcc6; font-weight:600; box-shadow:none; }
+    .bk-card.final { border-width:2px; margin-top:16px; }
+    .bk-half.right .bk-node { flex-direction:row-reverse; }
+    .bk-half.right .bk-kid { padding:12px 0 12px var(--bk-gap); }
+    .bk-half.right .bk-kid::after, .bk-half.right .bk-kid::before { right:auto; left:0; }
+    .bk-half.right .bk-card.has-kids { margin-left:0; margin-right:var(--bk-gap); }
+    .bk-half.right .bk-card.has-kids::before { left:auto; right:calc(-1 * var(--bk-gap)); }
+
     @media (max-width: 700px){
       body{ padding:10px; }
       .container{ padding:12px; border-radius:12px; }
@@ -227,6 +316,11 @@
     <div class="tab-content active" id="tab1">
 
       <div id="tab1Main">
+        <div class="subtab-bar">
+          <button class="subtab-btn active" data-sub="t1Group" type="button">Vòng bảng</button>
+          <button class="subtab-btn" data-sub="t1KoSub" type="button">🏆 Vòng Knockout</button>
+        </div>
+        <div class="subtab-content active" id="t1Group">
         <div class="actions-row">
           <button id="btnPair" class="secondary">🎲 Chia cặp ngẫu nhiên</button>
           <button id="btn2" class="warn">Chia 2 bảng</button>
@@ -254,6 +348,26 @@
         <div class="footer-tools">
           <button id="btnClearHistory" class="del-btn" type="button">🗑️ Xóa lịch sử</button>
         </div>
+
+        </div><!-- /t1Group -->
+
+        <div class="subtab-content" id="t1KoSub">
+      <div id="t1Knockout">
+        <p class="hint">Ghép cặp cho vòng Knockout và dựng nhánh đấu đến Chung kết, dựa trên danh sách Nhất/Nhì/Ba/Tư (nhập ở Tab "Thêm người chơi → Vòng Knockout") và luật ưu tiên ở Tab 3.</p>
+        <div class="actions-row">
+          <button id="btnKoPair" class="secondary" type="button">🎲 Quay ghép cặp Knockout</button>
+        </div>
+        <div id="koMessage" class="message-banner">
+          <span class="icon" id="koMessageIcon"></span>
+          <span id="koMessageText"></span>
+        </div>
+        <div id="koKetQua"></div>
+        <div id="koBracket"></div>
+        <div class="footer-tools">
+          <button id="btnClearKoHistory" class="del-btn" type="button">🗑️ Xóa lịch sử Knockout</button>
+        </div>
+      </div>
+        </div><!-- /t1KoSub -->
       </div>
 
       <div id="spinScreen" class="spin-screen" style="display:none;">
@@ -275,6 +389,12 @@
     </div>
 
     <div class="tab-content" id="tab2">
+      <div class="subtab-bar">
+        <button class="subtab-btn active" data-sub="koVongBang" type="button">Vòng bảng</button>
+        <button class="subtab-btn" data-sub="koKnockout" type="button">Vòng Knockout</button>
+      </div>
+
+      <div class="subtab-content active" id="koVongBang">
       <div class="add-form">
         <input id="ten" type="text" placeholder="Nhập tên người chơi" />
         <select id="hang">
@@ -291,6 +411,18 @@
         <button id="btnDelSel" class="del-btn" type="button">🗑️ Xóa đã chọn</button>
         <button id="btnDelAll" class="del-btn" type="button">🗑️ Xóa tất cả</button>
       </div>
+      <div class="force-box">
+        <h4>🔗 Ghép bắt buộc (vòng bảng)</h4>
+        <p class="hint" style="margin-top:0;">Chọn 2 người, họ sẽ luôn vào cùng một cặp khi quay ngẫu nhiên, bỏ qua luật ưu tiên bên dưới.</p>
+        <div class="force-row">
+          <select id="forceA"></select>
+          <span>⇄</span>
+          <select id="forceB"></select>
+          <button id="btnAddForce" class="secondary" type="button">+ Thêm</button>
+        </div>
+        <div class="force-list" id="forceList"></div>
+      </div>
+
       <div class="rank-columns">
         <div class="rank-col">
           <h4>Hạng 1</h4>
@@ -307,6 +439,26 @@
         <div class="rank-col">
           <h4>Hạng 4</h4>
           <ul class="name-list" id="list4"></ul>
+        </div>
+      </div>
+    </div>
+
+      <div class="subtab-content" id="koKnockout">
+        <p class="hint">Sau khi biết kết quả vòng bảng, nhập người vào từng vị trí Nhất / Nhì / Ba / Tư của mỗi bảng. Bỏ trống nếu bảng không dùng hoặc không có người ở vị trí đó.</p>
+        <div class="ko-groups" id="koGroups"></div>
+        <button id="btnSaveKo" class="secondary" type="button" style="width:100%; margin-top:4px;">💾 Lưu danh sách Knockout</button>
+        <div class="ko-saved-list" id="koSavedList"></div>
+
+        <div class="force-box">
+          <h4>🔗 Ghép bắt buộc (vòng Knockout)</h4>
+          <p class="hint" style="margin-top:0;">Ví dụ: Nhì A luôn gặp Nhất B, bỏ qua luật ưu tiên bên dưới cho riêng cặp này.</p>
+          <div class="force-row">
+            <select id="koForceA"></select>
+            <span>⇄</span>
+            <select id="koForceB"></select>
+            <button id="btnAddKoForce" class="secondary" type="button">+ Thêm</button>
+          </div>
+          <div class="force-list" id="koForceList"></div>
         </div>
       </div>
     </div>
@@ -335,6 +487,35 @@
         <div class="prio-legend" id="prioLegend"></div>
         <p style="margin-top:12px; font-size:13px; color:var(--muted);">• Khi chia bảng: tối thiểu 3 cặp/bảng, các cặp được chia ngẫu nhiên và đều nhau nhất có thể giữa các bảng.</p>
         <p style="margin-top:6px; font-size:13px; color:var(--muted);">• Thứ tự quay ngẫu nhiên: app quay lần lượt theo thứ tự các hạng ở cột bên trái (bấm ✏️ Sửa luật, bấm vào tên hạng rồi chọn thứ tự quay, hạng đó sẽ tự nhảy về đúng vị trí). Trong mỗi hạng, người chơi được quay ngẫu nhiên từng người cho đến khi hết người của hạng đó thì mới sang hạng kế tiếp; người đã có cặp thì được bỏ qua. Cứ thế đến khi hết người chơi trong danh sách.</p>
+
+        <h3 style="margin-top:22px;">Luật ghép vòng Knockout</h3>
+        <p class="hint">Áp dụng cho danh sách Nhất / Nhì / Ba / Tư đã nhập ở Tab "Thêm người chơi → Vòng Knockout". Cách sửa luật giống hệt bảng ở trên: bấm ✏️ Sửa luật bên dưới.</p>
+        <div class="rules-box">
+          <table class="prio-table">
+            <thead>
+              <tr><th>Vị trí</th><th>Nhất</th><th>Nhì</th><th>Ba</th><th>Tư</th></tr>
+            </thead>
+            <tbody id="koPrioTableBody"></tbody>
+          </table>
+          <div class="prio-legend" id="koPrioLegend"></div>
+          <button id="btnEditKoPrio" class="secondary" type="button" style="margin-top:10px;">✏️ Sửa luật Knockout</button>
+          <button id="btnSaveKoPrio" class="secondary" type="button" style="margin-top:10px; display:none;">💾 Lưu</button>
+          <button id="btnResetKoPrio" class="secondary" type="button" style="margin-top:10px; display:none;">↺ Mặc định</button>
+        </div>
+
+        <div class="ko-round-select">
+          <b>Vòng bắt đầu khung Knockout:</b>
+          <select id="koStartRound">
+            <option value="auto">Tự động theo số người</option>
+            <option value="16">Vòng 1/16 (32 người)</option>
+            <option value="8">Vòng 1/8 (16 người)</option>
+            <option value="4">Tứ kết (8 người)</option>
+            <option value="2">Bán kết (4 người)</option>
+            <option value="1">Chung kết (2 người)</option>
+          </select>
+        </div>
+        <p style="margin-top:6px; font-size:13px; color:var(--muted);">• Nguyên tắc chia nhánh: sau khi các cặp đấu Knockout được xác định (theo luật ưu tiên và ghép bắt buộc ở trên), app xếp ngẫu nhiên tất cả người vào các nhánh của vòng bắt đầu. Cứ 2 nhánh liền nhau (1-2, 3-4, 5-6...) tạo thành một trận. Nếu giải không đủ người cho 5 vòng, chọn thẳng vòng bắt đầu phù hợp ở trên, ví dụ chỉ có Tứ kết → Bán kết → Chung kết.</p>
+
         <div class="share-bar" style="margin-top:14px;">
           <button id="btnShare" class="warn" type="button">🔗 Sao chép link chia sẻ</button>
           <span class="share-msg" id="shareMsg">Link kèm danh sách người chơi, luật ưu tiên và kết quả chia cặp/bảng hiện tại.</span>
@@ -374,6 +555,470 @@
   let editMode = false;
   let draftPriorityRules = null;
   let spinOrder = [1,2,3,4];      // thứ tự các hạng được quay ngẫu nhiên
+  // ==== Vòng Knockout: danh sách Nhất/Nhì/Ba/Tư của từng bảng (nhập tay sau khi có kết quả vòng bảng) ====
+  const KO_GROUPS = ['A','B','C','D'];
+  const KO_SLOTS = [['nhat','Nhất'],['nhi','Nhì'],['ba','Ba'],['tu','Tư']];
+  let koList = { A:{nhat:'',nhi:'',ba:'',tu:''}, B:{nhat:'',nhi:'',ba:'',tu:''}, C:{nhat:'',nhi:'',ba:'',tu:''}, D:{nhat:'',nhi:'',ba:'',tu:''} };
+
+  function renderKoForm(){
+    const wrap = document.getElementById('koGroups');
+    wrap.innerHTML = KO_GROUPS.map(g => `
+      <div class="ko-group">
+        <h4>Bảng ${g}</h4>
+        ${KO_SLOTS.map(([key,label]) => `<label><span>${label}</span><input type="text" data-group="${g}" data-slot="${key}" value="${escapeHtml(koList[g][key])}" placeholder="Tên người chơi"></label>`).join('')}
+      </div>
+    `).join('');
+  }
+  function renderKoSaved(){
+    const wrap = document.getElementById('koSavedList');
+    const groupsWithData = KO_GROUPS.filter(g => KO_SLOTS.some(([key]) => koList[g][key].trim()));
+    if(groupsWithData.length === 0){ wrap.innerHTML = '<p class="hint">Chưa có danh sách Knockout nào được lưu.</p>'; return; }
+    wrap.innerHTML = groupsWithData.map(g => `
+      <div class="ko-saved-group">
+        <h5>Bảng ${g}</h5>
+        ${KO_SLOTS.filter(([key]) => koList[g][key].trim()).map(([key,label]) => `<div class="ko-row"><b>${label}:</b>${escapeHtml(koList[g][key])}</div>`).join('')}
+      </div>
+    `).join('');
+  }
+  document.getElementById('koGroups').addEventListener('input', e=>{
+    const inp = e.target.closest('input[data-group]');
+    if(!inp) return;
+    koList[inp.dataset.group][inp.dataset.slot] = inp.value;
+  });
+  document.getElementById('btnSaveKo').addEventListener('click', ()=>{
+    renderKoSaved();
+    renderKoForceLists();
+    saveState();
+    showMessage('Đã lưu danh sách vòng Knockout.', false);
+  });
+
+  // ==== Chuyển giữa hai tab con của Tab 2: Vòng bảng / Vòng Knockout ====
+  document.querySelectorAll('.subtab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const scope = btn.closest('.tab-content');          // chỉ đổi tab con trong cùng tab cha, không đụng nhóm khác
+      scope.querySelectorAll('.subtab-btn').forEach(b=>b.classList.remove('active'));
+      scope.querySelectorAll('.subtab-content').forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.sub).classList.add('active');
+    });
+  });
+
+  // ==== Ghép bắt buộc & luật ưu tiên vòng Knockout ====
+  let forcedPairs = [];                 // vòng bảng: [[tên A, tên B], ...]
+  let koForcedPairs = [];               // vòng Knockout: [[{g,slot}, {g,slot}], ...]
+  function defaultKoPriorityRules(){ return { nhat:['tu','ba','nhi','nhat'], nhi:['tu','ba','nhi','nhat'], ba:[], tu:[] }; }
+  let koPriorityRules = defaultKoPriorityRules();
+  let koStartRound = 'auto';
+  let koEditMode = false, draftKoPriorityRules = null;
+
+  function allPlayers(){ return [...hang1, ...hang2, ...hang3, ...hang4]; }
+
+  // ==== Quay ghép cặp vòng Knockout (Tab 1 → sub-tab "Vòng Knockout") ====
+  let koCapDau = [];   // [[{g,slot,name}, {g,slot,name}], ...] — mỗi phần tử là một trận
+
+  function koBuildPools(){
+    const pools = { nhat:[], nhi:[], ba:[], tu:[] };
+    KO_GROUPS.forEach(g => KO_SLOTS.forEach(([key]) => {
+      const name = koList[g][key].trim();
+      if(name) pools[key].push({ g, name });
+    }));
+    return pools;
+  }
+  function koRemoveFromPool(pools, slot, g){
+    const arr = pools[slot], i = arr.findIndex(p => p.g === g);
+    if(i > -1) arr.splice(i, 1);
+  }
+  function koShowMessage(text, isError){
+    const el = document.getElementById('koMessage');
+    el.style.display = 'flex';
+    el.classList.remove('error','success');
+    el.classList.add(isError ? 'error' : 'success');
+    document.getElementById('koMessageIcon').textContent = isError ? '⚠️' : '✅';
+    document.getElementById('koMessageText').textContent = text;
+  }
+  function koRoundLabel(n){
+    const fixed = { '16':'Vòng 1/16', '8':'Vòng 1/8', '4':'Tứ kết', '2':'Bán kết', '1':'Chung kết' };
+    if(koStartRound !== 'auto' && fixed[koStartRound]) return fixed[koStartRound];
+    if(n <= 1) return 'Chung kết';
+    if(n <= 2) return 'Bán kết';
+    if(n <= 4) return 'Tứ kết';
+    if(n <= 8) return 'Vòng 1/8';
+    return 'Vòng 1/16';
+  }
+  const KO_RANK_NUM = { nhat:1, nhi:2, ba:3, tu:4 };
+
+  function renderKoKetQua(){
+    const wrap = document.getElementById('koKetQua');
+    if(koCapDau.length === 0){
+      wrap.innerHTML = '<p class="hint">Chưa có kết quả. Bấm "🎲 Quay ghép cặp Knockout" để bắt đầu.</p>';
+      renderKoBracket();
+      return;
+    }
+    const label = koRoundLabel(koCapDau.length);
+    wrap.innerHTML = `<h3>${label} — ${koCapDau.length} trận</h3>` + koCapDau.map((m,i) => `
+      <div class="pair-card">
+        <span class="pair-num">${i*2+1}-${i*2+2}</span>
+        <span class="rank-tag r${KO_RANK_NUM[m[0].slot]}">${koSlotLabel(m[0].g, m[0].slot)}</span>
+        <span class="pair-name">${escapeHtml(m[0].name)}</span>
+        <span class="vs-icon">🆚</span>
+        <span class="pair-name">${escapeHtml(m[1].name)}</span>
+        <span class="rank-tag r${KO_RANK_NUM[m[1].slot]}">${koSlotLabel(m[1].g, m[1].slot)}</span>
+      </div>
+    `).join('');
+    renderKoBracket();
+  }
+
+  // ==== Nhánh đấu Knockout đến chung kết ====
+  let koWinners = {};   // { 'vòng-trận': 'a' | 'b' }  (vòng 0 = vòng đầu tiên)
+  let koSchedule = {};  // { 'vòng-trận': 'YYYY-MM-DDTHH:MM' } ngày giờ thi đấu
+  function koBracketSize(m){
+    let p = 1; while(p < m) p *= 2;
+    const fixed = parseInt(koStartRound, 10);
+    if(!isNaN(fixed) && fixed > p) p = fixed;
+    return p;
+  }
+  function koBitRev(x, bits){ let r = 0; for(let i=0;i<bits;i++){ r = (r<<1) | (x&1); x >>= 1; } return r; }
+  // Xếp các trận vào P vị trí của vòng đầu; chỗ thừa (nếu số trận không phải 2^n) được rải đều thành BYE
+  function koBuildSlots(matches, P){
+    const slots = new Array(P).fill(null);
+    if(P === 1){ slots[0] = matches[0]; return slots; }
+    const pairCount = P/2, bits = Math.round(Math.log2(pairCount));
+    const order = [];
+    for(let j=0;j<pairCount;j++) order.push(2*koBitRev(j,bits)+1);
+    for(let j=0;j<pairCount;j++) order.push(2*koBitRev(j,bits));
+    const empty = new Set(order.slice(0, P - matches.length));
+    let k = 0;
+    for(let s=0;s<P;s++){ if(!empty.has(s)) slots[s] = matches[k++]; }
+    return slots;
+  }
+  function koExists(slots, r, i){
+    if(r === 0) return !!slots[i];
+    return koExists(slots, r-1, 2*i) || koExists(slots, r-1, 2*i+1);
+  }
+  function koMatchOf(slots, r, i){
+    if(r === 0){ const m = slots[i]; return m ? { a:m[0], b:m[1], aEx:true, bEx:true } : null; }
+    const aEx = koExists(slots, r-1, 2*i), bEx = koExists(slots, r-1, 2*i+1);
+    if(!aEx && !bEx) return null;
+    return { a: aEx ? koWinnerOf(slots, r-1, 2*i) : null, b: bEx ? koWinnerOf(slots, r-1, 2*i+1) : null, aEx, bEx };
+  }
+  function koWinnerOf(slots, r, i){
+    const m = koMatchOf(slots, r, i);
+    if(!m) return null;
+    if(m.aEx && !m.bEx) return m.a;     // BYE: đi thẳng vào vòng sau
+    if(m.bEx && !m.aEx) return m.b;
+    const w = koWinners[r + '-' + i];
+    return w === 'a' ? m.a : w === 'b' ? m.b : null;
+  }
+  function koRoundName(n){
+    if(n <= 1) return 'Chung kết';
+    if(n === 2) return 'Bán kết';
+    if(n === 4) return 'Tứ kết';
+    return 'Vòng 1/' + n;
+  }
+  // Số thứ tự trận trong vòng: chỉ đếm các trận thật (đủ 2 bên), từ trái sang phải rồi sang nửa phải
+  function koMatchNo(slots, r, i){
+    let n = 0;
+    for(let j=0; j<=i; j++){ const m = koMatchOf(slots, r, j); if(m && m.aEx && m.bEx) n++; }
+    return n;
+  }
+  // Trận thật cung cấp người thắng cho vị trí (r,i) (bỏ qua các trận BYE)
+  function koSource(slots, r, i){
+    if(r === 0) return { r, i };
+    const m = koMatchOf(slots, r, i);
+    if(m && m.aEx && !m.bEx) return koSource(slots, r-1, 2*i);
+    if(m && m.bEx && !m.aEx) return koSource(slots, r-1, 2*i+1);
+    return { r, i };
+  }
+  function koTitle(slots, r, i, P){
+    const base = koRoundName(P / Math.pow(2, r));
+    return r === Math.round(Math.log2(P)) ? base : `${base} - Trận ${koMatchNo(slots, r, i)}`;
+  }
+  function koCardHtml(slots, r, i, P, isFinal){
+    const m = koMatchOf(slots, r, i);
+    if(!m) return '<div class="bk-card ghost"></div>';
+    const key = r + '-' + i, w = koWinners[key];
+    const real = m.aEx && m.bEx;
+    const canPick = real && m.a && m.b;
+    const pendingText = childIdx => {
+      const src = koSource(slots, r-1, childIdx);
+      return 'Thắng ' + koTitle(slots, src.r, src.i, P);
+    };
+    const row = (p, ex, sideKey, childIdx) => {
+      const side = 's-' + sideKey;
+      if(!ex) return `<div class="bk-row bye ${side}">BYE</div>`;
+      if(!p) return `<div class="bk-row pending ${side}">${r > 0 ? pendingText(childIdx) : 'Chờ kết quả'}</div>`;
+      const cls = (w === sideKey ? 'win ' : (w ? 'lose ' : '')) + (canPick ? 'pick ' : '') + side;
+      const n = KO_RANK_NUM[p.slot];
+      return `<div class="bk-row ${cls}" ${canPick ? `data-ko-pick="${key}" data-side="${sideKey}"` : ''}>` +
+             `<span class="rank-tag r${n}">${n}${p.g}</span><span class="bk-name">${escapeHtml(p.name)}</span></div>`;
+    };
+    const nM = P / Math.pow(2, r);
+    const tier = nM <= 1 ? 'gold' : nM === 2 ? 'silver' : nM === 4 ? 'bronze' : 'green';
+    const cls = 'bk-card tier-' + tier + (isFinal ? ' final' : (r > 0 ? ' has-kids' : ''));
+    const label = real ? koTitle(slots, r, i, P) : koRoundName(P / Math.pow(2, r));
+    const dtVal = koSchedule[key] || '';
+    const dt = real ? `<div class="bk-dt ${dtVal ? 'has' : ''}"><span class="bk-dt-ph">Nhập ngày...</span><input class="bk-date" type="datetime-local" data-ko-dt="${key}" value="${escapeHtml(dtVal)}"></div>` : '';
+    return `<div class="${cls}">${dt}<div class="bk-label">${label}</div>${row(m.a, m.aEx, 'a', 2*i)}${real ? '<div class="bk-vs">⚔️</div>' : ''}${row(m.b, m.bEx, 'b', 2*i+1)}</div>`;
+  }
+  function koRenderNode(slots, r, i, P){
+    const card = koCardHtml(slots, r, i, P, false);
+    if(r === 0) return `<div class="bk-node">${card}</div>`;
+    const kid = j => `<div class="bk-kid ${koExists(slots, r-1, j) ? '' : 'none'}">${koRenderNode(slots, r-1, j, P)}</div>`;
+    return `<div class="bk-node"><div class="bk-kids">${kid(2*i)}${kid(2*i+1)}</div>${card}</div>`;
+  }
+  function renderKoBracket(){
+    const wrap = document.getElementById('koBracket');
+    if(!wrap) return;
+    if(koCapDau.length === 0){ wrap.innerHTML = ''; return; }
+    const P = koBracketSize(koCapDau.length);
+    const slots = koBuildSlots(koCapDau, P);
+    const K = Math.round(Math.log2(P));
+    const champ = koWinnerOf(slots, K, 0);
+    const finalCard = koCardHtml(slots, K, 0, P, true);
+    const center = `<div class="bk-center"><div class="bk-trophy">🏆</div>${finalCard}` +
+      (champ ? `<div class="bk-champ">🥇 ${escapeHtml(champ.name)}</div>` : '') + '</div>';
+    const body = K === 0 ? center
+      : `<div class="bk-half left">${koRenderNode(slots, K-1, 0, P)}</div>${center}<div class="bk-half right">${koRenderNode(slots, K-1, 1, P)}</div>`;
+    wrap.innerHTML = '<h3 class="section-title" style="margin-top:18px;">🌳 Nhánh đấu đến Chung kết</h3>' +
+      '<p class="hint">Bấm vào tên người thắng ở mỗi trận để đưa họ vào vòng sau; chọn ngày giờ thi đấu ở dòng phía trên mỗi trận. Bấm lại vào người đã chọn để bỏ chọn; đổi người thắng sẽ xóa các vòng phía sau.</p>' +
+      `<div class="bk-scroll"><div class="bk-wrap">${body}</div></div>`;
+  }
+  function koClearWinnerFrom(key){
+    let [r, i] = key.split('-').map(Number);
+    const K = Math.round(Math.log2(koBracketSize(Math.max(koCapDau.length, 1))));
+    for(; r <= K; r++, i >>= 1) delete koWinners[r + '-' + i];
+  }
+  document.getElementById('koBracket').addEventListener('click', e => {
+    const inp = e.target.closest('[data-ko-dt]');
+    if(inp && typeof inp.showPicker === 'function'){ try{ inp.showPicker(); }catch(err){} }
+  });
+  document.getElementById('koBracket').addEventListener('change', e => {
+    const inp = e.target.closest('[data-ko-dt]');
+    if(!inp) return;
+    if(inp.value) koSchedule[inp.dataset.koDt] = inp.value; else delete koSchedule[inp.dataset.koDt];
+    inp.parentNode.classList.toggle('has', !!inp.value);
+    saveState();
+  });
+  document.getElementById('koBracket').addEventListener('click', e => {
+    const row = e.target.closest('[data-ko-pick]');
+    if(!row) return;
+    const key = row.dataset.koPick, side = row.dataset.side;
+    const same = koWinners[key] === side;
+    koClearWinnerFrom(key);
+    if(!same) koWinners[key] = side;
+    renderKoBracket();
+    saveState();
+  });
+
+  function koQuayGhepCap(){
+    document.getElementById('koMessage').style.display = 'none';
+    const pools = koBuildPools();
+    const total = koSlotKeys.reduce((s,k) => s + pools[k].length, 0);
+    if(total < 2){
+      koShowMessage('Chưa đủ người. Vào Tab "Thêm người chơi → Vòng Knockout" để nhập Nhất/Nhì/Ba/Tư của từng bảng trước.', true);
+      return;
+    }
+
+    let matches = [];
+
+    // Ghép bắt buộc trước, bỏ qua luật ưu tiên cho đúng các trận này
+    koForcedPairs.forEach(([A,B]) => {
+      const a = pools[A.slot].find(p => p.g === A.g);
+      const b = pools[B.slot].find(p => p.g === B.g);
+      if(a && b){
+        koRemoveFromPool(pools, A.slot, A.g);
+        koRemoveFromPool(pools, B.slot, B.g);
+        matches.push([{g:A.g, slot:A.slot, name:a.name}, {g:B.g, slot:B.slot, name:b.name}]);
+      }
+    });
+
+    // Xáo từng nhóm vị trí, rồi xét lần lượt Nhất → Nhì → Ba → Tư (Nhất ghép hết mới đến Nhì)
+    koSlotKeys.forEach(k => shuffle(pools[k]));
+    let queue = [];
+    koSlotKeys.forEach(slot => pools[slot].forEach(p => queue.push({ ...p, slot })));
+
+    queue.forEach(person => {
+      if(!pools[person.slot].some(p => p.g === person.g)) return;   // đã được ghép làm đối thủ của người khác rồi
+      const order = koPriorityRules[person.slot] || [];
+      for(const targetSlot of order){
+        const candidates = pools[targetSlot].filter(p => p.g !== person.g);   // không ghép lại người cùng bảng
+        if(candidates.length > 0){
+          const chosen = candidates[Math.floor(Math.random()*candidates.length)];
+          koRemoveFromPool(pools, person.slot, person.g);
+          koRemoveFromPool(pools, targetSlot, chosen.g);
+          matches.push([{g:person.g, slot:person.slot, name:person.name}, {g:chosen.g, slot:targetSlot, name:chosen.name}]);
+          break;
+        }
+      }
+    });
+
+    // Phân ngẫu nhiên các trận vào nhánh: xáo thứ tự trận, và xáo vị trí trên/dưới trong mỗi trận
+    shuffle(matches);
+    matches.forEach(m => { if(Math.random() < 0.5) m.reverse(); });
+
+    koCapDau = matches;
+    koWinners = {}; koSchedule = {};
+    renderKoKetQua();
+    saveState();
+
+    const leftover = koSlotKeys.reduce((s,k) => s + pools[k].length, 0);
+    if(leftover > 0){
+      const reasons = koSlotKeys.filter(k => pools[k].length > 0)
+        .map(k => `${koSlotNames[k]} còn ${pools[k].length} người chưa có đối thủ.`);
+      koShowMessage('Không thể ghép hết: ' + reasons.join(' ') + ' Bạn có thể quay lại, thêm ghép bắt buộc, hoặc chỉnh luật ở Tab 3.', true);
+    } else {
+      koShowMessage(`Đã ghép xong ${koCapDau.length} trận cho vòng Knockout.`, false);
+    }
+  }
+  document.getElementById('btnKoPair').addEventListener('click', koQuayGhepCap);
+
+  (function(){
+    const btn = document.getElementById('btnClearKoHistory');
+    const originalText = btn.textContent;
+    let timer = null;
+    function reset(){ clearTimeout(timer); btn.textContent = originalText; btn.classList.remove('confirming'); }
+    btn.addEventListener('click', ()=>{
+      if(koCapDau.length === 0){
+        btn.textContent = 'Chưa có lịch sử để xóa';
+        clearTimeout(timer); timer = setTimeout(reset, 2000);
+        return;
+      }
+      if(!btn.classList.contains('confirming')){
+        btn.classList.add('confirming');
+        btn.textContent = '❗ Bấm lại để xóa';
+        timer = setTimeout(reset, 3000);
+        return;
+      }
+      reset();
+      koCapDau = [];
+      koWinners = {}; koSchedule = {};
+      document.getElementById('koMessage').style.display = 'none';
+      renderKoKetQua();
+      saveState();
+    });
+  })();
+
+  function koSlotLabel(g, slot){ const names = {nhat:'Nhất', nhi:'Nhì', ba:'Ba', tu:'Tư'}; return `${names[slot]} ${g}`; }
+  function koAllSlots(){
+    const out = [];
+    KO_GROUPS.forEach(g => KO_SLOTS.forEach(([key]) => { if(koList[g][key].trim()) out.push({g, slot:key}); }));
+    return out;
+  }
+
+  function renderForceLists(){
+    const selA = document.getElementById('forceA'), selB = document.getElementById('forceB');
+    const names = allPlayers();
+    const opts = names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    selA.innerHTML = opts || '<option value="">(chưa có người chơi)</option>';
+    selB.innerHTML = opts || '<option value="">(chưa có người chơi)</option>';
+    document.getElementById('forceList').innerHTML = forcedPairs.length
+      ? forcedPairs.map((p,i)=>`<div class="force-item"><span>${escapeHtml(p[0])} ⇄ ${escapeHtml(p[1])}</span><button type="button" data-i="${i}" class="btnRemoveForce">Bỏ</button></div>`).join('')
+      : '<p class="hint" style="margin:0;">Chưa có cặp ghép bắt buộc nào.</p>';
+  }
+  document.getElementById('btnAddForce').addEventListener('click', ()=>{
+    const a = document.getElementById('forceA').value, b = document.getElementById('forceB').value;
+    if(!a || !b || a === b){ showAddWarning('Hãy chọn 2 người khác nhau.'); return; }
+    if(forcedPairs.some(p => p.includes(a) || p.includes(b))){ showAddWarning('Một trong hai người đã nằm trong cặp ghép bắt buộc khác.'); return; }
+    forcedPairs.push([a, b]);
+    renderForceLists(); saveState();
+  });
+  document.getElementById('forceList').addEventListener('click', e=>{
+    const btn = e.target.closest('.btnRemoveForce'); if(!btn) return;
+    forcedPairs.splice(parseInt(btn.dataset.i), 1);
+    renderForceLists(); saveState();
+  });
+
+  function renderKoForceLists(){
+    const selA = document.getElementById('koForceA'), selB = document.getElementById('koForceB');
+    const slots = koAllSlots();
+    const opts = slots.map(s => `<option value="${s.g}|${s.slot}">${koSlotLabel(s.g,s.slot)} — ${escapeHtml(koList[s.g][s.slot])}</option>`).join('');
+    selA.innerHTML = opts || '<option value="">(chưa có dữ liệu Knockout)</option>';
+    selB.innerHTML = opts || '<option value="">(chưa có dữ liệu Knockout)</option>';
+    document.getElementById('koForceList').innerHTML = koForcedPairs.length
+      ? koForcedPairs.map((p,i)=>`<div class="force-item"><span>${koSlotLabel(p[0].g,p[0].slot)} ⇄ ${koSlotLabel(p[1].g,p[1].slot)}</span><button type="button" data-i="${i}" class="btnRemoveKoForce">Bỏ</button></div>`).join('')
+      : '<p class="hint" style="margin:0;">Chưa có cặp ghép bắt buộc nào.</p>';
+  }
+  document.getElementById('btnAddKoForce').addEventListener('click', ()=>{
+    const av = document.getElementById('koForceA').value, bv = document.getElementById('koForceB').value;
+    if(!av || !bv || av === bv){ showAddWarning('Hãy chọn 2 vị trí khác nhau.'); return; }
+    const [ag,aslot] = av.split('|'), [bg,bslot] = bv.split('|');
+    const used = s => koForcedPairs.some(p => (p[0].g===s.g&&p[0].slot===s.slot) || (p[1].g===s.g&&p[1].slot===s.slot));
+    if(used({g:ag,slot:aslot}) || used({g:bg,slot:bslot})){ showAddWarning('Một trong hai vị trí đã nằm trong cặp ghép bắt buộc khác.'); return; }
+    koForcedPairs.push([{g:ag,slot:aslot},{g:bg,slot:bslot}]);
+    renderKoForceLists(); saveState();
+  });
+  document.getElementById('koForceList').addEventListener('click', e=>{
+    const btn = e.target.closest('.btnRemoveKoForce'); if(!btn) return;
+    koForcedPairs.splice(parseInt(btn.dataset.i), 1);
+    renderKoForceLists(); saveState();
+  });
+
+  // ---- bảng luật ưu tiên vòng Knockout (Tab 3), cùng cơ chế với bảng luật vòng bảng ----
+  const koSlotKeys = ['nhat','nhi','ba','tu'];
+  const koSlotNames = { nhat:'Nhất', nhi:'Nhì', ba:'Ba', tu:'Tư' };
+  const btnEditKoPrio = document.getElementById('btnEditKoPrio');
+  const btnSaveKoPrio = document.getElementById('btnSaveKoPrio');
+  const btnResetKoPrio = document.getElementById('btnResetKoPrio');
+  const koPrioTableBody = document.getElementById('koPrioTableBody');
+  const koPrioLegend = document.getElementById('koPrioLegend');
+
+  function renderKoPrioTable(){
+    const rules = koEditMode ? draftKoPriorityRules : koPriorityRules;
+    let html = '';
+    koSlotKeys.forEach(row=>{
+      html += `<tr><td>${koSlotNames[row]}</td>`;
+      koSlotKeys.forEach(col=>{
+        const idx = rules[row].indexOf(col);
+        const active = idx !== -1;
+        const label = active ? (idx+1) : '';
+        html += `<td><button type="button" class="prio-cell-btn ${active?'active':''}" data-row="${row}" data-col="${col}" ${koEditMode?'':'disabled'}>${label}</button></td>`;
+      });
+      html += '</tr>';
+    });
+    koPrioTableBody.innerHTML = html;
+    koPrioLegend.innerHTML = koSlotKeys.map(row=>{
+      const seq = rules[row].map(x=>koSlotNames[x]).join(' → ');
+      return `<div class="prio-legend-item"><strong>${koSlotNames[row]}</strong> ưu tiên gặp: ${seq || '(chưa chọn)'}</div>`;
+    }).join('');
+  }
+  function updateKoPrioUI(){
+    btnEditKoPrio.style.display = koEditMode ? 'none' : 'inline-block';
+    btnSaveKoPrio.style.display = koEditMode ? 'inline-block' : 'none';
+    btnResetKoPrio.style.display = koEditMode ? 'inline-block' : 'none';
+    renderKoPrioTable();
+  }
+  btnEditKoPrio.addEventListener('click', ()=>{
+    koEditMode = true;
+    draftKoPriorityRules = JSON.parse(JSON.stringify(koPriorityRules));
+    updateKoPrioUI();
+  });
+  btnSaveKoPrio.addEventListener('click', ()=>{
+    koPriorityRules = draftKoPriorityRules;
+    koEditMode = false; draftKoPriorityRules = null;
+    saveState();
+    updateKoPrioUI();
+  });
+  btnResetKoPrio.addEventListener('click', ()=>{
+    if(!koEditMode) return;
+    draftKoPriorityRules = defaultKoPriorityRules();
+    renderKoPrioTable();
+  });
+  koPrioTableBody.addEventListener('click', e=>{
+    if(!koEditMode) return;
+    const btn = e.target.closest('.prio-cell-btn'); if(!btn) return;
+    const row = btn.dataset.row, col = btn.dataset.col;
+    const arr = draftKoPriorityRules[row];
+    const idx = arr.indexOf(col);
+    if(idx === -1) arr.push(col); else arr.splice(idx,1);
+    renderKoPrioTable();
+  });
+  document.getElementById('koStartRound').addEventListener('change', e=>{
+    koStartRound = e.target.value;
+    koWinners = {}; koSchedule = {};           // đổi vòng bắt đầu → nhánh đổi → xóa kết quả thắng/thua cũ
+    renderKoBracket();
+    saveState();
+  });
+
   let draftSpinOrder = null;
   let openPick = null, lastMoved = null;   // hạng đang mở ô chọn thứ tự / hạng vừa được chuyển
   const validOrder = a => Array.isArray(a) && a.length === 4 && [1,2,3,4].every(x => a.includes(x));
@@ -425,7 +1070,8 @@
   function saveState(){
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        hang1, hang2, hang3, hang4, priorityRules, spinOrder
+        hang1, hang2, hang3, hang4, priorityRules, spinOrder, koList,
+        forcedPairs, koForcedPairs, koPriorityRules, koStartRound, koCapDau, koWinners, koSchedule
       }));
     }catch(e){ /* trình duyệt chặn lưu trữ: bỏ qua */ }
   }
@@ -440,6 +1086,24 @@
       priorityRules = clonePriorityRules(r);
     }
     if(validOrder(d.spinOrder)) spinOrder = [...d.spinOrder];
+    if(d.koList && typeof d.koList === 'object'){
+      KO_GROUPS.forEach(g=>{
+        if(d.koList[g]) KO_SLOTS.forEach(([key])=>{ if(typeof d.koList[g][key] === 'string') koList[g][key] = d.koList[g][key]; });
+      });
+    }
+    if(Array.isArray(d.forcedPairs)) forcedPairs = d.forcedPairs.filter(p => Array.isArray(p) && p.length===2);
+    if(Array.isArray(d.koForcedPairs)) koForcedPairs = d.koForcedPairs.filter(p => Array.isArray(p) && p.length===2 && p[0] && p[1]);
+    if(d.koPriorityRules && koSlotKeys.every(k => Array.isArray(d.koPriorityRules[k]))) koPriorityRules = d.koPriorityRules;
+    if(typeof d.koStartRound === 'string') koStartRound = d.koStartRound;
+    if(d.koWinners && typeof d.koWinners === 'object'){
+      koWinners = {};
+      Object.keys(d.koWinners).forEach(k => { if(/^\d+-\d+$/.test(k) && (d.koWinners[k] === 'a' || d.koWinners[k] === 'b')) koWinners[k] = d.koWinners[k]; });
+    }
+    if(d.koSchedule && typeof d.koSchedule === 'object'){
+      koSchedule = {};
+      Object.keys(d.koSchedule).forEach(k => { if(/^\d+-\d+$/.test(k) && typeof d.koSchedule[k] === 'string') koSchedule[k] = d.koSchedule[k]; });
+    }
+    if(Array.isArray(d.koCapDau)) koCapDau = d.koCapDau.filter(m => Array.isArray(m) && m.length===2 && m[0] && m[1] && m[0].name && m[1].name);
   }
   function loadState(){
     try{
@@ -838,6 +1502,17 @@
       4: shuffle([...hang4])
     };
 
+    // Ghép bắt buộc trước, bỏ qua luật ưu tiên cho đúng các cặp này
+    const rankOfPlayer = n => hang1.includes(n)?1 : hang2.includes(n)?2 : hang3.includes(n)?3 : hang4.includes(n)?4 : 0;
+    forcedPairs.forEach(([a,b])=>{
+      const ra = rankOfPlayer(a), rb = rankOfPlayer(b);
+      if(!ra || !rb) return;
+      if(pools[ra].indexOf(a) === -1 || pools[rb].indexOf(b) === -1) return;
+      pools[ra].splice(pools[ra].indexOf(a), 1);
+      pools[rb].splice(pools[rb].indexOf(b), 1);
+      capDau.push([a, b]);
+    });
+
     let queue = [];
     // Xét lần lượt theo thứ tự hạng đã cài ở Tab 3 (trong mỗi hạng thứ tự đã được xáo ngẫu nhiên)
     spinOrder.forEach(rank => pools[rank].forEach(name => queue.push({name, rank})));
@@ -1208,6 +1883,7 @@
     }
     capNhatThongKe();
     resetDelSel();
+    renderForceLists();
     saveState();
   }
 
@@ -1215,6 +1891,13 @@
 
   loadState();
   loadFromHash();
+  renderKoForm();
+  renderKoSaved();
+  renderForceLists();
+  renderKoForceLists();
+  document.getElementById('koStartRound').value = koStartRound;
+  updateKoPrioUI();
+  renderKoKetQua();
   updatePriorityUI();
   renderAll();
 </script>
