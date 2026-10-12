@@ -215,8 +215,13 @@
     #koBracket:empty { display:none; }
     #koBracket .section-title { color:#fff; text-align:center; font-size:17px; letter-spacing:0.4px; margin:0 0 4px !important; }
     #koBracket .hint { color:#a9bcc6; text-align:center; margin:0 0 6px; }
-    .bk-scroll { overflow-x:auto; padding:20px 2px 14px; -webkit-overflow-scrolling:touch; }
-    .bk-wrap { display:flex; align-items:center; justify-content:center; width:max-content; min-width:100%; margin:0 auto; }
+    .bk-scroll { overflow:auto; max-height:80vh; padding:6px 2px 10px; -webkit-overflow-scrolling:touch; }
+    .bk-sizer { position:relative; margin:0 auto; }
+    .bk-wrap { display:flex; align-items:center; justify-content:center; width:max-content; padding-top:20px; transform-origin:0 0; }
+    .bk-toolbar { display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; margin:6px 0 2px; }
+    .bk-toolbar button { width:auto; min-width:32px; padding:5px 11px; font-size:13px; font-weight:700; line-height:1.1; color:#e8f1f5; background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.28); border-radius:999px; box-shadow:none; }
+    .bk-toolbar button:hover { background:rgba(255,255,255,0.20); filter:none; }
+    .bk-toolbar .bk-zoom-lbl { min-width:96px; text-align:center; font-size:12px; font-weight:700; color:#d3e0e6; }
     .bk-half { display:flex; align-items:center; }
     .bk-half.left::after, .bk-half.right::before { content:''; width:var(--bk-gap); height:2px; background:var(--bk-line); flex-shrink:0; }
     .bk-node { display:flex; align-items:center; }
@@ -270,6 +275,60 @@
     .bk-half.right .bk-card.has-kids { margin-left:0; margin-right:var(--bk-gap); }
     .bk-half.right .bk-card.has-kids::before { left:auto; right:calc(-1 * var(--bk-gap)); }
 
+
+    /* ==== Danh sách bảng đấu (Tab 2) & lịch thi đấu vòng bảng (Tab 1) ==== */
+    .bd-card { background:#fff; border:1.5px solid #cfe3e0; border-radius:12px; padding:10px; margin-top:10px; }
+    .bd-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+    .bd-head input { flex:1; min-width:0; font-weight:800; }
+    .bd-head .bd-count { font-size:12px; color:var(--muted); white-space:nowrap; }
+    .bd-card textarea { width:100%; box-sizing:border-box; min-height:110px; padding:8px 10px; border:1.5px solid #cfe3e0; border-radius:10px; font:inherit; font-size:14px; resize:vertical; background:#fbfefe; }
+    .bd-warn { color:#c0392b; font-size:12px; margin-top:4px; min-height:0; }
+    .lich-opts { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
+    .lich-opts select { flex:1 1 220px; min-width:0; }
+    .lich-opts button { flex:0 0 auto; width:auto; }
+    .lich-group { background:#fff; border:1.5px solid #cfe3e0; border-radius:12px; padding:10px 12px 12px; margin-top:12px; }
+    .lich-group > h3 { margin:0 0 2px; }
+    .lich-sub { font-size:12px; color:var(--muted); margin-bottom:6px; }
+    .lich-leg { margin:12px 0 4px; padding:3px 10px; border-radius:999px; display:inline-block; background:var(--primary); color:#fff; font-weight:800; font-size:12.5px; }
+    .lich-round { margin:8px 0 2px; font-weight:800; font-size:13px; color:var(--primary-dark); }
+    .lich-match { display:flex; align-items:center; gap:8px; padding:6px 10px; margin:3px 0; border-radius:9px; background:#f1f9f8; font-size:13.5px; font-weight:600; }
+    .lich-match .no { flex:0 0 auto; font-size:11px; font-weight:800; color:#fff; background:var(--navy); border-radius:999px; padding:1px 7px; }
+    .lich-match .t1 { flex:1; text-align:left; min-width:0; word-break:break-word; }
+    .lich-match .t2 { flex:1; text-align:right; min-width:0; word-break:break-word; }
+    .lich-bye { font-size:12px; font-style:italic; color:var(--muted); margin:2px 0 0 4px; }
+
+
+    .lich-match .sc { flex:0 0 auto; width:46px; box-sizing:border-box; text-align:center; padding:4px 2px; font-size:14px; font-weight:800; border:1.5px solid #cfe3e0; border-radius:8px; background:#fff; -moz-appearance:textfield; }
+    .lich-match .sc::-webkit-outer-spin-button, .lich-match .sc::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+    .lich-match .sc.tie { border-color:#c0392b; background:#fdecea; }
+    .lich-match.w1 .t1, .lich-match.w2 .t2 { color:#0b6b3a; font-weight:800; }
+    .lich-match.w1 .t2, .lich-match.w2 .t1 { opacity:0.6; }
+    .lich-match .t1, .lich-match .t2 { word-break:normal; overflow-wrap:break-word; }
+    @media (max-width: 600px){
+      .lich-match { flex-wrap:wrap; justify-content:center; row-gap:4px; }
+      .lich-match .no { order:0; }
+      .lich-match .t1 { order:1; flex:1 1 calc(100% - 40px); }
+      .lich-match .sc, .lich-match .t1 ~ span { order:2; }
+      .lich-match .t2 { order:3 !important; flex:1 1 100%; text-align:right; }
+    }
+    /* Bảng xếp hạng */
+    .rk-board { margin-top:12px; border-radius:14px; overflow:hidden; background:#eaf2fb; border:1px solid #c5d8ee; box-shadow:0 4px 14px rgba(18,64,138,0.18); }
+    .rk-banner { background:linear-gradient(135deg,#12357a,#1c5bb5); color:#fff; text-align:center; padding:12px 8px; display:flex; align-items:center; justify-content:center; gap:14px; }
+    .rk-banner .t1 { font-size:20px; font-weight:900; letter-spacing:0.5px; text-transform:uppercase; line-height:1.15; }
+    .rk-banner .t2 { font-size:14px; font-weight:800; letter-spacing:0.5px; margin-top:2px; }
+    .rk-banner .ic { font-size:30px; }
+    .rk-groups { padding:8px; display:flex; flex-direction:column; gap:10px; }
+    .rk-g { border-radius:12px; overflow:hidden; background:#fff; border:2px solid var(--gc); }
+    .rk-g h4 { margin:0; padding:7px 12px; background:var(--gc); color:#fff; font-size:18px; font-weight:900; text-transform:uppercase; }
+    .rk-scroll { overflow-x:auto; }
+    .rk-t { width:100%; border-collapse:collapse; font-size:13px; min-width:560px; }
+    .rk-t th { background:var(--gl); color:#14325c; font-weight:800; padding:6px 5px; border:1px solid var(--gc); white-space:nowrap; }
+    .rk-t td { padding:6px 6px; border:1px solid var(--gc); text-align:center; font-weight:700; }
+    .rk-t td.nm { text-align:left; font-weight:600; min-width:150px; }
+    .rk-t td.r1 { background:#ffd966; } .rk-t td.r2 { background:#d9dee6; } .rk-t td.r3 { background:#f0b98a; } .rk-t td.r4 { background:#d6e9f8; }
+    .rk-t td.pos { color:#14325c; font-weight:900; }
+    .rk-note { padding:4px 10px 8px; font-size:11.5px; color:#4a6178; }
+
     @media (max-width: 700px){
       body{ padding:10px; }
       .container{ padding:12px; border-radius:12px; }
@@ -318,6 +377,7 @@
       <div id="tab1Main">
         <div class="subtab-bar">
           <button class="subtab-btn active" data-sub="t1Group" type="button">Vòng bảng</button>
+          <button class="subtab-btn" data-sub="t1Lich" type="button">📅 Sắp xếp lượt đấu</button>
           <button class="subtab-btn" data-sub="t1KoSub" type="button">🏆 Vòng Knockout</button>
         </div>
         <div class="subtab-content active" id="t1Group">
@@ -350,6 +410,25 @@
         </div>
 
         </div><!-- /t1Group -->
+
+        <div class="subtab-content" id="t1Lich">
+          <p class="hint">Xếp lịch thi đấu vòng tròn trong từng bảng: mỗi đội gặp lần lượt tất cả các đội còn lại. Danh sách đội của bảng được nhập ở <b>Tab 2 → Danh sách bảng đấu</b>.</p>
+          <div class="lich-opts">
+            <select id="lichOpt">
+              <option value="1">Đấu 1 lượt (mỗi cặp gặp nhau 1 lần)</option>
+              <option value="2">Đấu 2 lượt (lượt đi + lượt về)</option>
+            </select>
+            <button id="btnLich" type="button">🗓️ Sắp xếp lượt đấu</button>
+          </div>
+          <p class="warn-text" id="lichMsg"></p>
+          <div class="lich-opts" id="lichRankBar" style="display:none;">
+            <input id="lichTitle" type="text" placeholder="Tên giải (hiện ở đầu bảng xếp hạng)" style="flex:1 1 220px; min-width:0;" />
+            <button id="btnLichRank" type="button" class="secondary">📊 Hiển thị bảng xếp hạng</button>
+          </div>
+          <div id="lichRank"></div>
+          <p class="hint" id="lichScoreHint" style="display:none;">Nhập tỉ số từng trận (điểm đội trên – điểm đội dưới). Chỉ trận đã nhập đủ cả hai bên mới được tính. Xếp hạng: nhiều trận thắng hơn xếp trên, rồi đến hiệu số, rồi đối đầu.</p>
+          <div id="lichKq"></div>
+        </div><!-- /t1Lich -->
 
         <div class="subtab-content" id="t1KoSub">
       <div id="t1Knockout">
@@ -391,6 +470,7 @@
     <div class="tab-content" id="tab2">
       <div class="subtab-bar">
         <button class="subtab-btn active" data-sub="koVongBang" type="button">Vòng bảng</button>
+        <button class="subtab-btn" data-sub="bangDoiTab" type="button">📋 Danh sách bảng đấu</button>
         <button class="subtab-btn" data-sub="koKnockout" type="button">Vòng Knockout</button>
       </div>
 
@@ -442,6 +522,15 @@
         </div>
       </div>
     </div>
+
+      <div class="subtab-content" id="bangDoiTab">
+        <p class="hint">Nhập danh sách đội của từng bảng, mỗi đội một dòng (ví dụ tên cặp: "An & Bình"). Danh sách này dùng để sắp xếp lượt đấu ở Tab 1.</p>
+        <div class="list-tools">
+          <button id="btnBdImport" class="secondary" type="button">⬇️ Lấy từ kết quả chia bảng (Tab 1)</button>
+          <button id="btnBdAdd" class="secondary" type="button">+ Thêm bảng</button>
+        </div>
+        <div id="bdList"></div>
+      </div>
 
       <div class="subtab-content" id="koKnockout">
         <p class="hint">Sau khi biết kết quả vòng bảng, nhập người vào từng vị trí Nhất / Nhì / Ba / Tư của mỗi bảng. Bỏ trống nếu bảng không dùng hoặc không có người ở vị trí đó.</p>
@@ -671,6 +760,12 @@
   // ==== Nhánh đấu Knockout đến chung kết ====
   let koWinners = {};   // { 'vòng-trận': 'a' | 'b' }  (vòng 0 = vòng đầu tiên)
   let koSchedule = {};  // { 'vòng-trận': 'YYYY-MM-DDTHH:MM' } ngày giờ thi đấu
+  let bangDoi = [ {name:'Bảng A', teams:[]}, {name:'Bảng B', teams:[]}, {name:'Bảng C', teams:[]}, {name:'Bảng D', teams:[]} ];  // danh sách đội từng bảng (Tab 2)
+  let lichOpt = '1';    // '1' = đấu 1 lượt, '2' = lượt đi + lượt về
+  let lichScore = {};   // { 'bảng-lượt-trận': ['điểm đội trên','điểm đội dưới'] } (chuỗi số)
+  let lichTitle = 'Giải cầu lông';
+  let lichShowRank = false;
+  let lichKq = [];      // kết quả xếp lượt đấu: [{name, legs, rounds:[{matches:[[a,b]], bye:'' }]}]
   function koBracketSize(m){
     let p = 1; while(p < m) p *= 2;
     const fixed = parseInt(koStartRound, 10);
@@ -780,9 +875,54 @@
     const body = K === 0 ? center
       : `<div class="bk-half left">${koRenderNode(slots, K-1, 0, P)}</div>${center}<div class="bk-half right">${koRenderNode(slots, K-1, 1, P)}</div>`;
     wrap.innerHTML = '<h3 class="section-title" style="margin-top:18px;">🌳 Nhánh đấu đến Chung kết</h3>' +
-      '<p class="hint">Bấm vào tên người thắng ở mỗi trận để đưa họ vào vòng sau; chọn ngày giờ thi đấu ở dòng phía trên mỗi trận. Bấm lại vào người đã chọn để bỏ chọn; đổi người thắng sẽ xóa các vòng phía sau.</p>' +
-      `<div class="bk-scroll"><div class="bk-wrap">${body}</div></div>`;
+      '<p class="hint">Bấm vào tên người thắng ở mỗi trận để đưa họ vào vòng sau; chọn ngày giờ thi đấu ở dòng phía trên mỗi trận. Dùng nút − / + (hoặc Ctrl + lăn chuột) để phóng to, thu nhỏ. Bấm lại vào người đã chọn để bỏ chọn; đổi người thắng sẽ xóa các vòng phía sau.</p>' +
+      '<div class="bk-toolbar"><button type="button" data-bkz="out" title="Thu nhỏ">−</button><span class="bk-zoom-lbl" id="bkZoomLbl"></span><button type="button" data-bkz="in" title="Phóng to">+</button><button type="button" data-bkz="fit" title="Vừa khung">⤢ Vừa khung</button></div>' +
+      `<div class="bk-scroll" id="bkScroll"><div class="bk-sizer" id="bkSizer"><div class="bk-wrap" id="bkWrap">${body}</div></div></div>`;
+    applyKoZoom();
   }
+
+  // ---- Phóng to / thu nhỏ nhánh đấu (mặc định: tự co vừa khung, thấy hết không cần kéo) ----
+  let koZoom = 'fit';          // 'fit' hoặc một số (tỉ lệ)
+  let koCurScale = 1;
+  function applyKoZoom(){
+    const scroll = document.getElementById('bkScroll'), sizer = document.getElementById('bkSizer'), w = document.getElementById('bkWrap');
+    if(!scroll || !sizer || !w || scroll.clientWidth === 0) return;   // đang ẩn (tab con khác): sẽ tính lại khi hiện
+    w.style.transform = 'none';
+    const nw = w.offsetWidth, nh = w.offsetHeight;
+    const avail = scroll.clientWidth - 6;
+    const fit = Math.min(1, avail / nw);
+    const sc = koZoom === 'fit' ? fit : koZoom;
+    koCurScale = sc;
+    w.style.transform = `scale(${sc})`;
+    sizer.style.width = Math.ceil(nw * sc) + 'px';
+    sizer.style.height = Math.ceil(nh * sc) + 'px';
+    const lbl = document.getElementById('bkZoomLbl');
+    if(lbl) lbl.textContent = (koZoom === 'fit' ? 'Vừa khung · ' : '') + Math.round(sc * 100) + '%';
+  }
+  function koSetZoom(v){
+    koZoom = v === 'fit' ? 'fit' : Math.min(2.5, Math.max(0.2, v));
+    applyKoZoom();
+  }
+  document.getElementById('koBracket').addEventListener('click', e => {
+    const b = e.target.closest('[data-bkz]');
+    if(!b) return;
+    if(b.dataset.bkz === 'fit') koSetZoom('fit');
+    else koSetZoom(koCurScale * (b.dataset.bkz === 'in' ? 1.2 : 1 / 1.2));
+  });
+  // Ctrl + lăn chuột để phóng to/nhỏ ngay trên khu vực nhánh đấu
+  document.getElementById('koBracket').addEventListener('wheel', e => {
+    if(!e.ctrlKey || !e.target.closest('#bkScroll')) return;
+    e.preventDefault();
+    koSetZoom(koCurScale * (e.deltaY < 0 ? 1.1 : 1 / 1.1));
+  }, { passive:false });
+  // Tự tính lại khi đổi kích thước cửa sổ hoặc khi tab con vừa hiện ra
+  (function(){
+    let lastW = 0;
+    const el = document.getElementById('koBracket');
+    const run = () => { const w = el.clientWidth; if(w !== lastW){ lastW = w; applyKoZoom(); } };
+    if(window.ResizeObserver) new ResizeObserver(run).observe(el);
+    window.addEventListener('resize', run);
+  })();
   function koClearWinnerFrom(key){
     let [r, i] = key.split('-').map(Number);
     const K = Math.round(Math.log2(koBracketSize(Math.max(koCapDau.length, 1))));
@@ -1014,6 +1154,7 @@
   });
   document.getElementById('koStartRound').addEventListener('change', e=>{
     koStartRound = e.target.value;
+    koZoom = 'fit';
     koWinners = {}; koSchedule = {};           // đổi vòng bắt đầu → nhánh đổi → xóa kết quả thắng/thua cũ
     renderKoBracket();
     saveState();
@@ -1071,7 +1212,7 @@
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         hang1, hang2, hang3, hang4, priorityRules, spinOrder, koList,
-        forcedPairs, koForcedPairs, koPriorityRules, koStartRound, koCapDau, koWinners, koSchedule
+        forcedPairs, koForcedPairs, koPriorityRules, koStartRound, koCapDau, koWinners, koSchedule, bangDoi, lichOpt, lichKq, lichScore, lichTitle
       }));
     }catch(e){ /* trình duyệt chặn lưu trữ: bỏ qua */ }
   }
@@ -1103,6 +1244,19 @@
       koSchedule = {};
       Object.keys(d.koSchedule).forEach(k => { if(/^\d+-\d+$/.test(k) && typeof d.koSchedule[k] === 'string') koSchedule[k] = d.koSchedule[k]; });
     }
+    const okStr = a => Array.isArray(a) && a.every(x => typeof x === 'string');
+    if(Array.isArray(d.bangDoi) && d.bangDoi.length && d.bangDoi.every(g => g && typeof g.name === 'string' && okStr(g.teams))){
+      bangDoi = d.bangDoi.map(g => ({ name:g.name, teams:g.teams.slice() }));
+    }
+    if(d.lichOpt === '1' || d.lichOpt === '2') lichOpt = d.lichOpt;
+    if(typeof d.lichTitle === 'string') lichTitle = d.lichTitle;
+    if(d.lichScore && typeof d.lichScore === 'object'){
+      lichScore = {};
+      Object.keys(d.lichScore).forEach(k => { const v = d.lichScore[k];
+        if(/^\d+-\d+-\d+$/.test(k) && Array.isArray(v) && v.length === 2 && v.every(x => typeof x === 'string' && /^\d{0,3}$/.test(x))) lichScore[k] = v; });
+    }
+    if(Array.isArray(d.lichKq)) lichKq = d.lichKq.filter(g => g && typeof g.name === 'string' && (g.legs === 1 || g.legs === 2) && Array.isArray(g.rounds) &&
+      g.rounds.every(r => r && typeof r.bye === 'string' && Array.isArray(r.matches) && r.matches.every(m => okStr(m) && m.length === 2)));
     if(Array.isArray(d.koCapDau)) koCapDau = d.koCapDau.filter(m => Array.isArray(m) && m.length===2 && m[0] && m[1] && m[0].name && m[1].name);
   }
   function loadState(){
@@ -1889,8 +2043,206 @@
 
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
 
+
+  // ==== Danh sách bảng đấu (Tab 2) ====
+  function bdTrim(text){ return text.split('\n').map(t => t.trim()).filter(Boolean); }
+  function renderBangDoi(){
+    const wrap = document.getElementById('bdList');
+    wrap.innerHTML = bangDoi.map((g, i) => `
+      <div class="bd-card" data-bd="${i}">
+        <div class="bd-head">
+          <input type="text" data-bd-name="${i}" value="${escapeHtml(g.name)}" placeholder="Tên bảng">
+          <span class="bd-count" data-bd-count="${i}">${g.teams.length} đội</span>
+          <button type="button" class="del-btn" data-bd-del="${i}" style="width:auto;">🗑️</button>
+        </div>
+        <textarea data-bd-teams="${i}" placeholder="Mỗi đội một dòng...">${escapeHtml(g.teams.join('\n'))}</textarea>
+        <div class="bd-warn" data-bd-warn="${i}"></div>
+      </div>`).join('') || '<p class="empty-hint">Chưa có bảng nào. Bấm "+ Thêm bảng".</p>';
+    bangDoi.forEach((_, i) => bdUpdateInfo(i));
+  }
+  function bdUpdateInfo(i){
+    const g = bangDoi[i]; if(!g) return;
+    const c = document.querySelector(`[data-bd-count="${i}"]`), w = document.querySelector(`[data-bd-warn="${i}"]`);
+    if(c) c.textContent = g.teams.length + ' đội';
+    const seen = new Set(), dup = new Set();
+    g.teams.forEach(t => { const k = t.toLowerCase(); if(seen.has(k)) dup.add(t); seen.add(k); });
+    if(w) w.textContent = dup.size ? '⚠️ Trùng tên đội: ' + [...dup].join(', ') : '';
+  }
+  document.getElementById('bdList').addEventListener('input', e => {
+    const t = e.target;
+    if(t.dataset.bdTeams !== undefined){ const i = +t.dataset.bdTeams; bangDoi[i].teams = bdTrim(t.value); bdUpdateInfo(i); saveState(); }
+    else if(t.dataset.bdName !== undefined){ bangDoi[+t.dataset.bdName].name = t.value; saveState(); }
+  });
+  document.getElementById('bdList').addEventListener('click', e => {
+    const d = e.target.closest('[data-bd-del]');
+    if(!d) return;
+    const i = +d.dataset.bdDel;
+    if(bangDoi[i].teams.length && !confirm('Xóa "' + bangDoi[i].name + '" cùng danh sách đội?')) return;
+    bangDoi.splice(i, 1); renderBangDoi(); saveState();
+  });
+  document.getElementById('btnBdAdd').addEventListener('click', () => {
+    let n = bangDoi.length;
+    const used = new Set(bangDoi.map(g => g.name));
+    while(used.has('Bảng ' + String.fromCharCode(65 + n % 26) + (n >= 26 ? Math.floor(n/26) : ''))) n++;
+    bangDoi.push({ name:'Bảng ' + String.fromCharCode(65 + n % 26) + (n >= 26 ? Math.floor(n/26) : ''), teams:[] });
+    renderBangDoi(); saveState();
+  });
+  document.getElementById('btnBdImport').addEventListener('click', () => {
+    if(!capBang.length){ alert('Chưa có kết quả chia bảng ở Tab 1. Hãy chia bảng trước.'); return; }
+    if(bangDoi.some(g => g.teams.length) && !confirm('Thay toàn bộ danh sách bảng hiện tại bằng kết quả chia bảng ở Tab 1?')) return;
+    bangDoi = capBang.map((g, i) => ({ name:'Bảng ' + String.fromCharCode(65 + i), teams:g.map(p => p[0] + ' & ' + p[1]) }));
+    renderBangDoi(); saveState();
+  });
+
+  // ==== Sắp xếp lượt đấu vòng bảng (Tab 1) ====
+  // Phương pháp vòng tròn: n đội → n-1 lượt đấu (n lẻ thì thêm đội "nghỉ"), mỗi đội gặp mọi đội còn lại đúng 1 lần
+  function lichRoundRobin(teams){
+    const arr = teams.slice();
+    if(arr.length % 2) arr.push(null);
+    const n = arr.length, rounds = [];
+    for(let r = 0; r < n - 1; r++){
+      const matches = []; let bye = '';
+      for(let i = 0; i < n / 2; i++){
+        let a = arr[i], b = arr[n - 1 - i];
+        if(a === null || b === null){ bye = a === null ? b : a; continue; }
+        if(i === 0 && r % 2 === 1){ const t = a; a = b; b = t; }   // đổi bên cho cân đối
+        matches.push([a, b]);
+      }
+      rounds.push({ matches, bye });
+      arr.splice(1, 0, arr.pop());   // xoay vòng, giữ nguyên đội đầu
+    }
+    return rounds;
+  }
+  function lichBuild(){
+    if(Object.values(lichScore).some(v => v[0] !== '' || v[1] !== '') && !confirm('Sắp xếp lại sẽ xóa các tỉ số đã nhập. Tiếp tục?')) return;
+    lichScore = {};
+    const legs = lichOpt === '2' ? 2 : 1;
+    const msg = document.getElementById('lichMsg');
+    const out = [], skipped = [];
+    bangDoi.forEach(g => {
+      const seen = new Set(), teams = [];
+      g.teams.forEach(t => { const k = t.toLowerCase(); if(!seen.has(k)){ seen.add(k); teams.push(t); } });
+      if(teams.length < 2){ if(g.teams.length) skipped.push(g.name); return; }
+      let rounds = lichRoundRobin(teams);
+      if(legs === 2) rounds = rounds.concat(rounds.map(r => ({ matches: r.matches.map(m => [m[1], m[0]]), bye: r.bye })));
+      out.push({ name:g.name, legs, rounds });
+    });
+    lichKq = out;
+    msg.textContent = out.length ? '' : 'Chưa có bảng nào đủ từ 2 đội. Hãy nhập danh sách ở Tab 2 → Danh sách bảng đấu.';
+    if(out.length && skipped.length) msg.textContent = 'Bỏ qua (chưa đủ 2 đội): ' + skipped.join(', ');
+    renderLich(); saveState();
+  }
+  function renderLich(){
+    const wrap = document.getElementById('lichKq');
+    wrap.innerHTML = lichKq.map((g, gi) => {
+      const per = g.rounds.length / g.legs, total = g.rounds.reduce((n, r) => n + r.matches.length, 0);
+      let no = 0, html = `<div class="lich-group"><h3>${escapeHtml(g.name)}</h3><div class="lich-sub">${total} trận · ${g.rounds.length} lượt đấu${g.legs === 2 ? ' (lượt đi + lượt về)' : ''}</div>`;
+      g.rounds.forEach((r, ri) => {
+        if(g.legs === 2 && ri % per === 0) html += `<div class="lich-leg">${ri === 0 ? 'Lượt đi' : 'Lượt về'}</div>`;
+        html += `<div class="lich-round">Lượt đấu ${ri + 1}</div>`;
+        r.matches.forEach((m, mi) => {
+          no++;
+          const key = gi + '-' + ri + '-' + mi, v = lichScore[key] || ['', ''];
+          const inp = side => `<input class="sc ${lichIsTie(v) ? 'tie' : ''}" type="number" min="0" max="999" inputmode="numeric" data-sc="${key}" data-side="${side}" value="${v[side]}">`;
+          html += `<div class="lich-match ${lichWinCls(v)}" data-lm="${key}"><span class="no">${no}</span><span class="t1">${escapeHtml(m[0])}</span>${inp(0)}<span>⚔️</span>${inp(1)}<span class="t2">${escapeHtml(m[1])}</span></div>`;
+        });
+        if(r.bye) html += `<div class="lich-bye">😴 Nghỉ lượt này: ${escapeHtml(r.bye)}</div>`;
+      });
+      return html + '</div>';
+    }).join('') || '<p class="empty-hint">Chưa sắp xếp lượt đấu nào.</p>';
+    document.getElementById('lichRankBar').style.display = lichKq.length ? 'flex' : 'none';
+    document.getElementById('lichScoreHint').style.display = lichKq.length ? 'block' : 'none';
+    document.getElementById('lichTitle').value = lichTitle;
+    renderLichRank();
+  }
+
+  // ---- Tỉ số & bảng xếp hạng ----
+  function lichScored(v){ return v && v[0] !== '' && v[1] !== ''; }
+  function lichIsTie(v){ return lichScored(v) && +v[0] === +v[1]; }
+  function lichWinCls(v){ return !lichScored(v) || lichIsTie(v) ? '' : (+v[0] > +v[1] ? 'w1' : 'w2'); }
+
+  // Tính bảng xếp hạng một bảng. getScore(ri, mi) trả ['a','b'] hoặc undefined
+  function lichStandings(g, gi, getScore){
+    const stat = {}, order = [];
+    g.rounds.forEach(r => r.matches.forEach(m => m.forEach(t => { if(!stat[t]){ stat[t] = { name:t, w:0, l:0, pf:0, pa:0 }; order.push(t); } })));
+    const played = [];
+    g.rounds.forEach((r, ri) => r.matches.forEach((m, mi) => {
+      const v = getScore(gi, ri, mi);
+      if(!lichScored(v) || +v[0] === +v[1]) return;          // chưa nhập đủ hoặc hòa: không tính
+      const a = +v[0], b = +v[1];
+      played.push({ x:m[0], y:m[1], a, b });
+      const X = stat[m[0]], Y = stat[m[1]];
+      X.pf += a; X.pa += b; Y.pf += b; Y.pa += a;
+      if(a > b){ X.w++; Y.l++; } else { Y.w++; X.l++; }
+    }));
+    const rows = order.map(t => Object.assign(stat[t], { d: stat[t].pf - stat[t].pa, hw:0, hd:0 }));
+    rows.sort((p, q) => q.w - p.w || q.d - p.d);
+    // Đối đầu: trong từng nhóm đội bằng nhau về số trận thắng và hiệu số
+    for(let i = 0; i < rows.length; ){
+      let j = i + 1;
+      while(j < rows.length && rows[j].w === rows[i].w && rows[j].d === rows[i].d) j++;
+      if(j - i > 1){
+        const grp = rows.slice(i, j), names = new Set(grp.map(r => r.name));
+        played.forEach(m => {
+          if(!names.has(m.x) || !names.has(m.y)) return;
+          const X = stat[m.x], Y = stat[m.y];
+          X.hd += m.a - m.b; Y.hd += m.b - m.a;
+          if(m.a > m.b) X.hw++; else Y.hw++;
+        });
+        grp.sort((p, q) => q.hw - p.hw || q.hd - p.hd);
+        grp.forEach((r, k) => rows[i + k] = r);
+      }
+      i = j;
+    }
+    rows.forEach((r, k) => {
+      const prev = rows[k - 1];
+      r.rank = (prev && prev.w === r.w && prev.d === r.d && prev.hw === r.hw && prev.hd === r.hd) ? prev.rank : k + 1;
+    });
+    return rows;
+  }
+  const RK_COLORS = [['#1f6fb5','#cde6fa'], ['#3f9c7e','#d3efe5'], ['#d98a2b','#fbe6c8'], ['#7b5ea7','#e4dbf3'], ['#c0504d','#f6d9d8'], ['#2f8f9d','#d1eef2']];
+  function renderLichRank(){
+    const wrap = document.getElementById('lichRank');
+    const btn = document.getElementById('btnLichRank');
+    btn.textContent = lichShowRank ? '🙈 Ẩn bảng xếp hạng' : '📊 Hiển thị bảng xếp hạng';
+    if(!lichShowRank || !lichKq.length){ wrap.innerHTML = ''; return; }
+    const get = (gi, ri, mi) => lichScore[gi + '-' + ri + '-' + mi];
+    const groups = lichKq.map((g, gi) => {
+      const rows = lichStandings(g, gi, get), c = RK_COLORS[gi % RK_COLORS.length];
+      const cls = n => n <= 4 ? 'r' + n : 'r4';
+      return `<div class="rk-g" style="--gc:${c[0]};--gl:${c[1]};"><h4>${escapeHtml(g.name)}</h4><div class="rk-scroll"><table class="rk-t">
+        <tr><th>Hạng</th><th>Đội</th><th>Thắng</th><th>Thua</th><th>Điểm ghi</th><th>Điểm thua</th><th>Hiệu số</th><th>Xếp hạng</th></tr>` +
+        rows.map((r, k) => `<tr><td class="pos ${cls(k + 1)}">${k + 1}</td><td class="nm">${escapeHtml(r.name)}</td><td>${r.w}</td><td>${r.l}</td><td>${r.pf}</td><td>${r.pa}</td><td>${r.d > 0 ? '+' + r.d : r.d}</td><td class="pos ${cls(r.rank)}">${r.rank}</td></tr>`).join('') +
+        '</table></div></div>';
+    }).join('');
+    wrap.innerHTML = `<div class="rk-board"><div class="rk-banner"><span class="ic">🏸</span><div><div class="t1">${escapeHtml(lichTitle.trim() || 'Giải cầu lông')}</div><div class="t2">KẾT QUẢ VÀ BẢNG XẾP HẠNG</div></div><span class="ic">🏸</span></div>
+      <div class="rk-groups">${groups}</div><div class="rk-note">Xếp theo: số trận thắng → hiệu số → đối đầu. Chỉ tính các trận đã nhập đủ tỉ số (trận hòa không được tính).</div></div>`;
+  }
+  document.getElementById('lichKq').addEventListener('input', e => {
+    const inp = e.target.closest('[data-sc]');
+    if(!inp) return;
+    const key = inp.dataset.sc;
+    inp.value = inp.value.replace(/\D/g, '').slice(0, 3);
+    const v = lichScore[key] || ['', ''];
+    v[+inp.dataset.side] = inp.value;
+    if(v[0] === '' && v[1] === '') delete lichScore[key]; else lichScore[key] = v;
+    const row = inp.closest('.lich-match'), cur = lichScore[key] || ['', ''];
+    row.classList.remove('w1', 'w2');
+    const w = lichWinCls(cur); if(w) row.classList.add(w);
+    row.querySelectorAll('.sc').forEach(x => x.classList.toggle('tie', lichIsTie(cur)));
+    saveState();
+    if(lichShowRank) renderLichRank();
+  });
+  document.getElementById('btnLichRank').addEventListener('click', () => { lichShowRank = !lichShowRank; renderLichRank(); });
+  document.getElementById('lichTitle').addEventListener('input', e => { lichTitle = e.target.value; saveState(); if(lichShowRank) renderLichRank(); });
+  document.getElementById('lichOpt').addEventListener('change', e => { lichOpt = e.target.value; saveState(); });
+  document.getElementById('btnLich').addEventListener('click', lichBuild);
+
   loadState();
   loadFromHash();
+  document.getElementById('lichOpt').value = lichOpt;
+  renderBangDoi();
+  renderLich();
   renderKoForm();
   renderKoSaved();
   renderForceLists();
