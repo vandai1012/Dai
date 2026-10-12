@@ -276,6 +276,11 @@
     .bk-half.right .bk-card.has-kids::before { left:auto; right:calc(-1 * var(--bk-gap)); }
 
 
+    .data-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0 0 10px; padding:8px 10px; background:#f3faf9; border:1px dashed #9fcac5; border-radius:10px; }
+    .data-bar button { width:auto; padding:7px 12px; font-size:13px; }
+    .data-bar .share-msg { flex:1 1 180px; }
+    .data-bar .share-msg.ok { color:#0b6b3a; font-weight:700; }
+    .data-bar .share-msg.err { color:#c0392b; font-weight:700; }
     /* ==== Danh sách bảng đấu (Tab 2) & lịch thi đấu vòng bảng (Tab 1) ==== */
     .bd-card { background:#fff; border:1.5px solid #cfe3e0; border-radius:12px; padding:10px; margin-top:10px; }
     .bd-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
@@ -370,6 +375,13 @@
       <button class="tab-btn active" data-tab="tab1">🏸 Random chia cặp cầu lông</button>
       <button class="tab-btn" data-tab="tab2">➕ Thêm người chơi</button>
       <button class="tab-btn" data-tab="tab3">📜 Luật chia cặp</button>
+    </div>
+
+    <div class="data-bar">
+      <button id="btnExportData" type="button" class="secondary">💾 Xuất file dữ liệu</button>
+      <button id="btnImportData" type="button" class="secondary">📂 Nhập file dữ liệu</button>
+      <input id="fileImportData" type="file" accept=".json,application/json" style="display:none;">
+      <span class="share-msg" id="dataMsg">Lưu toàn bộ dữ liệu hiện tại ra file để mở lại sau.</span>
     </div>
 
     <div class="tab-content active" id="tab1">
@@ -2237,6 +2249,81 @@
   document.getElementById('lichTitle').addEventListener('input', e => { lichTitle = e.target.value; saveState(); if(lichShowRank) renderLichRank(); });
   document.getElementById('lichOpt').addEventListener('change', e => { lichOpt = e.target.value; saveState(); });
   document.getElementById('btnLich').addEventListener('click', lichBuild);
+
+
+  // ==== Xuất / nhập toàn bộ dữ liệu ra file (.json) ====
+  const DATA_FILE_APP = 'sdiv-badminton';
+  function collectAllData(){
+    return {
+      hang1, hang2, hang3, hang4, priorityRules, spinOrder, koList,
+      forcedPairs, koForcedPairs, koPriorityRules, koStartRound, koCapDau, koWinners, koSchedule,
+      bangDoi, lichOpt, lichKq, lichScore, lichTitle,
+      capDau, capBang          // kết quả quay chia cặp & chia bảng vòng bảng
+    };
+  }
+  function setDataMsg(text, cls){
+    const el = document.getElementById('dataMsg');
+    el.textContent = text; el.className = 'share-msg' + (cls ? ' ' + cls : '');
+  }
+  function resetAllState(){
+    hang1 = []; hang2 = []; hang3 = []; hang4 = [];
+    priorityRules = defaultPriorityRules(); spinOrder = [1,2,3,4];
+    KO_GROUPS.forEach(g => KO_SLOTS.forEach(([k]) => { koList[g][k] = ''; }));
+    forcedPairs = []; koForcedPairs = []; koPriorityRules = defaultKoPriorityRules(); koStartRound = 'auto';
+    koCapDau = []; koWinners = {}; koSchedule = {}; koZoom = 'fit';
+    bangDoi = [ {name:'Bảng A', teams:[]}, {name:'Bảng B', teams:[]}, {name:'Bảng C', teams:[]}, {name:'Bảng D', teams:[]} ];
+    lichOpt = '1'; lichKq = []; lichScore = {}; lichTitle = 'Giải cầu lông'; lichShowRank = false;
+    capDau = []; capBang = [];
+  }
+  function refreshEverything(){
+    exitEditMode();
+    document.getElementById('lichOpt').value = lichOpt;
+    renderBangDoi(); renderLich();
+    renderKoForm(); renderKoSaved(); renderForceLists(); renderKoForceLists();
+    document.getElementById('koStartRound').value = koStartRound;
+    updateKoPrioUI(); renderKoKetQua(); updatePriorityUI();
+    messageEl.style.display = 'none';
+    renderAll();
+  }
+  document.getElementById('btnExportData').addEventListener('click', () => {
+    const now = new Date(), p = n => String(n).padStart(2, '0');
+    const stamp = `${now.getFullYear()}${p(now.getMonth()+1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}`;
+    const payload = { app: DATA_FILE_APP, version: 1, exportedAt: now.toISOString(), data: collectAllData() };
+    const blob = new Blob([JSON.stringify(payload, null, 1)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = `sdiv-badminton-du-lieu-${stamp}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    setDataMsg('✅ Đã xuất file dữ liệu (' + a.download + ').', 'ok');
+  });
+  document.getElementById('btnImportData').addEventListener('click', () => document.getElementById('fileImportData').click());
+  document.getElementById('fileImportData').addEventListener('change', e => {
+    const f = e.target.files[0];
+    e.target.value = '';
+    if(!f) return;
+    const rd = new FileReader();
+    rd.onerror = () => setDataMsg('❌ Không đọc được file.', 'err');
+    rd.onload = () => {
+      let payload;
+      try{ payload = JSON.parse(rd.result); }catch(err){ setDataMsg('❌ File không phải dữ liệu hợp lệ (không đọc được JSON).', 'err'); return; }
+      if(!payload || payload.app !== DATA_FILE_APP || !payload.data || typeof payload.data !== 'object'){
+        setDataMsg('❌ Đây không phải file dữ liệu xuất từ app này.', 'err'); return;
+      }
+      if(spinScreen.style.display === 'block'){ setDataMsg('❌ Đang quay, hãy thoát màn hình quay rồi nhập lại.', 'err'); return; }
+      if(!confirm('Nhập dữ liệu từ file "' + f.name + '" sẽ thay thế toàn bộ dữ liệu hiện tại. Tiếp tục?')) return;
+      const d = payload.data;
+      resetAllState();
+      applyData(d);
+      const okPair = p => Array.isArray(p) && p.length === 2 && p.every(x => typeof x === 'string');
+      if(Array.isArray(d.capDau)) capDau = d.capDau.filter(okPair);
+      if(Array.isArray(d.capBang)) capBang = d.capBang.filter(Array.isArray).map(g => g.filter(okPair));
+      refreshEverything();
+      saveState();
+      const when = payload.exportedAt ? new Date(payload.exportedAt).toLocaleString('vi-VN') : '';
+      setDataMsg('✅ Đã nhập dữ liệu' + (when ? ' (xuất lúc ' + when + ')' : '') + '.', 'ok');
+    };
+    rd.readAsText(f, 'utf-8');
+  });
 
   loadState();
   loadFromHash();
